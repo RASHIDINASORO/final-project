@@ -1,0 +1,124 @@
+/* General body styles */
+body {
+    background: #fafafa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Center the container */
+.container {
+    background: #fff;
+    max-width: 370px;
+    margin: 60px auto;
+    padding: 38px 36px 32px 36px;
+    border-radius: 14px;
+    box-shadow: 0 4px 32px rgba(30,40,110,0.07), 0 1.5px 10px rgba(80,90,120,0.09);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Title and subtitle */
+.title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+.subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 24px;
+}
+
+/* Form styling */
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+/* Input styling for all input types */
+input[type="email"], input[type="password"] {
+    width: 90%;
+    padding: 13px 16px;
+    font-size: 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f3f3f3;
+    outline: none;
+    transition: border 0.2s;
+    margin-bottom: 2px;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border: 1.5px solid #5cc16d;
+}
+
+/* Submit button */
+.btn {
+    width: 100%;
+    padding: 12px 0;
+    background: #5cc16d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+.btn:hover {
+    background: #44aa54;
+}
+
+/* Message and links */
+.signin, .success-message {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 1rem;
+}
+
+a {
+    color: #5cc16d;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+a:hover {
+    text-decoration: underline;
+    color: #44aa54;
+}
+
+/* Extra: error message */
+.error-message {
+    color: #d32f2f;
+    font-size: 0.97rem;
+    text-align: center;
+    margin-bottom: 8px;
+    margin-top: 4px;
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .container {
+        padding: 24px 8px 20px 8px;
+        max-width: 95vw;
+    }
+    .title {
+        font-size: 1.4rem;
+    }
+}

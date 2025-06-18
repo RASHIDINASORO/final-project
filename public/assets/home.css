@@ -1,0 +1,135 @@
+  /* styles for home page */
+  body {
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+.region{
+    background-color: #68c56b;
+    
+}
+.weather {
+    font-size: 25px;
+    font-weight: bold;
+   display: flex;
+    background-color: #8ce78c;
+    color: rgb(0, 0, 0);
+    padding: 10px;
+    text-align: left;
+    border-radius: 15px;
+    font-style: italic;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-inline-end: 30px;
+    margin-inline-start: 4px;
+
+
+}
+.weather h1 {
+    margin: 0;
+    font-size: 18px;
+}
+.weather p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+.weather .temperature {
+    font-size: 30px;
+    margin-top: 10px;
+}
+.crops {
+    padding: 1px;
+    text-align: center;
+    background-color: white;
+    position: fixed;
+}
+.crops h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.crops-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.crop {
+    text-align: center;
+    font-style: italic;
+}
+.crop img {
+    width: 100px;
+    height: 100px;
+    border-radius: 4px;
+    background-color: #e0e0e0;
+    margin-bottom: 1px;
+}
+.market-prices {
+    padding: 20px;
+    flex: 1; 
+    overflow-y: auto; 
+    padding-bottom: 20px; 
+    margin-top: 300px;
+}
+.market-prices h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.price-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+   
+}
+.price-item:last-child {
+    border-bottom: none;
+}
+.price-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+}
+.price-item .details {
+    flex: 1;
+    margin-left: 10px;
+}
+.price-item .details span {
+    display: block;
+}
+.price-item .details .name {
+    font-size: 16px;
+    font-weight: bold;
+}
+.price-item .details .price {
+    font-size: 14px;
+    color: #777;
+}
+.a{
+    top: 0;
+    position: fixed;
+    border-bottom: 1px #f9f9f9;
+    width: 100%;
+    position: fixed;
+}
+.navbar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background-color: rgb(61, 250, 92);
+    border-top: 1px solid #ccc;
+    padding: 10px 0;
+}
+.navbar a {
+    text-align: center;
+    text-decoration: none;
+    color: #000000;
+    font-size: 14px;
+}
+.navbar a.active {
+    font-weight: bold;
+}

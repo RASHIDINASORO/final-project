@@ -1,0 +1,174 @@
+// Wait for the DOM to load
+document.addEventListener("DOMContentLoaded", () => {
+    // Handle signup form submission
+    const signupForm = document.getElementById("signupForm");
+    if (signupForm) {
+        signupForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const fullName = document.getElementById("fullName").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            // Send data to the server
+            try {
+                const response = await fetch("http://localhost:3000/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fullName, phone, email, password }),
+                });
+
+                const result = await response.json();
+
+                // Display success or error message
+                const messageDiv = document.getElementById("message");
+                if (response.ok) {
+                    messageDiv.textContent = "You are registered! Now login.";
+                    messageDiv.style.color = "green";
+
+                    // Clear the form
+                    signupForm.reset();
+                } else {
+                    messageDiv.textContent = result.message || "An error occurred.";
+                    messageDiv.style.color = "red";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                const messageDiv = document.getElementById("message");
+                messageDiv.textContent = "An error occurred. Please try again.";
+                messageDiv.style.color = "red";
+            }
+        });
+    }
+
+    // Handle login form submission
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const email = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            // Send data to the server
+            try {
+                const response = await fetch("http://localhost:3000/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const result = await response.json();
+
+                // Handle response
+                if (response.ok) {
+                    // Redirect to home.html on successful login
+                    window.location.href = "home.html";
+                } else {
+                    // Display error message
+                    alert(result.message || "Invalid credentials. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            }
+        });
+    }
+
+    // Handle navbar navigation
+    setupNavbar();
+
+    // Handle chat input
+    setupChatInput();
+
+    // Fetch success stories
+    fetchSuccessStories();
+});
+
+document.getElementById('recoverForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const email = document.getElementById('recoverEmail').value.trim();
+    alert(`If an account exists for ${email}, recovery instructions have been sent.`);
+    // Optionally, send this email to your backend for processing.
+});
+
+// Function to validate the signup form
+function validateSignupForm(fullName, phone, email, password) {
+    if (!fullName || !phone || !email || !password) {
+        alert("All fields are required.");
+        return false;
+    }
+    if (!/^\d{10}$/.test(phone)) {
+        alert("Phone number must be 10 digits.");
+        return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+        alert("Invalid email format.");
+        return false;
+    }
+    if (password.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return false;
+    }
+    return true;
+}
+
+// Function to validate the login form
+function validateLoginForm(username, password) {
+    if (!username || !password) {
+        alert("Both username and password are required.");
+        return false;
+    }
+    return true;
+}
+
+// Function to set up the navbar
+function setupNavbar() {
+    const navbarLinks = document.querySelectorAll(".navbar a");
+    navbarLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const target = e.target.closest("a").getAttribute("href");
+            window.location.href = target; // Navigate to the target page
+        });
+    });
+}
+
+// Function to handle chat input
+function setupChatInput() {
+    const chatInput = document.getElementById("chatInput");
+    const sendMessageBtn = document.getElementById("sendMessageBtn");
+
+    if (chatInput && sendMessageBtn) {
+        sendMessageBtn.addEventListener("click", () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                addChatMessage("user", message);
+                chatInput.value = ""; // Clear the input
+            }
+        });
+    }
+}
+
+// Function to add a chat message
+function addChatMessage(sender, message) {
+    const chatContainer = document.querySelector(".chat-container");
+    if (chatContainer) {
+        const chatDiv = document.createElement("div");
+        chatDiv.classList.add("chat", sender);
+        chatDiv.innerHTML = `<div class="message">${message}</div>`;
+        chatContainer.appendChild(chatDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+    }
+}
+
+// Function to fetch success stories
+function fetchSuccessStories() {
+    fetch('http://localhost:3000/success-stories')
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+}
