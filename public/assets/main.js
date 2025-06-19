@@ -65,6 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Handle response
                 if (response.ok) {
+                    // Store user information in localStorage
+                    localStorage.setItem('user', JSON.stringify(result.user));
                     // Redirect to home.html on successful login
                     window.location.href = "home.html";
                 } else {
@@ -172,3 +174,9 @@ function fetchSuccessStories() {
         .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
 }
+
+// Store user information in localStorage (for demonstration purposes)
+localStorage.setItem('user', JSON.stringify({
+    username: 'Yusuph Paul', // Replace with actual username
+    avatar: 'icons/general profile.jpeg' // Replace with actual avatar path if available
+}));

@@ -32,8 +32,6 @@ body {
     border: 1px solid #ccc;
     border-radius: 20px;
 }
-
-
 .product-grid {
     flex: 1;
     display: grid;
@@ -80,6 +78,11 @@ body {
 .product .cart-btn i {
     margin-left: 5px;
 }
+.nav img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
 .navbar {
     position: fixed;
     bottom: 0;
@@ -87,7 +90,7 @@ body {
     display: flex;
     justify-content: space-around;
     background-color: rgb(255, 255, 255);
-    border-top: 2px solid #ccc;
+    border-top: 0px solid #ccc;
     padding: 10px 0;
 }
 .navbar a {

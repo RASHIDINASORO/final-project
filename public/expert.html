@@ -1,76 +1,240 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kilimolink</title>
-    <link rel="icon" href="icons/download.webp" type="">
-    <link rel="stylesheet" href="assets/expert.css">
-    
+    <title>Expert Service</title>
+    <link rel="stylesheet" href="assets/profile.css">
+    <style>
+        body {
+            background: #f9f9f9;
+        }
+        .expert-container {
+            max-width: 70%;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .expert-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 24px 0 12px 0;
+            text-align: center;
+            padding-left: 18px;
+            color: #68c56b;
+        }
+        .booked-btn {
+            width: 90%;
+            margin: 0 auto 18px auto;
+            background: #f3f3f3;
+            color: #222;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-size: 17px;
+            font-weight: 500;
+            text-align: center;
+            display: block;
+        }
+        .experts-label {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0 0 10px 18px;
+            margin-left: 5%;
+        }
+        .expert-list {
+            width: 92%;
+            margin: 0 auto;
+        }
+        .expert-card {
+            display: flex;
+            align-items: center;
+            background: #f3f3f3;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            padding: 10px 12px;
+            width: 100%;
+        }
+        .expert-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ddd;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        .expert-info {
+            flex: 1;
+        }
+        .expert-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #222;
+        }
+        .expert-specialty {
+            font-size: 14px;
+            color: #888;
+        }
+        .chat-btn {
+            background: #68c56b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .nav img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+          }
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            border-top: 0px solid #ccc;
+            padding: 10px 0;
+        }
+        .navbar a {
+            text-align: center;
+            text-decoration: none;
+            color: #000000;
+            font-size: 14px;
+        }
+        .navbar a.active {
+            font-weight: bold;
+        }
+        .nav-item.active {
+            color: #68c56b;
+            font-weight: bold;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+        @media (max-width: 430px) {
+            .expert-container, .bottom-nav {
+                max-width: 100vw;
+            }
+        }
+
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100vw;
+            max-width: 100%;
+            background: #fff;
+            border-top: 0px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 2px 0;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #222;
+            font-size: 15px;
+            flex: 1;
+        }
+        .nav-item.active span {
+            font-weight: bold;
+        }
+        .nav-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .nav-item span {
+            font-size: 14px;
+            margin-top: 2px;
+            display: block;
+        }
+        .nav-item.active .nav-icon {
+            filter: brightness(0) saturate(100%) invert(54%) sepia(69%) saturate(355%) hue-rotate(72deg) brightness(93%) contrast(90%);
+        }
+
+        
+.main-content {
+    width: 100vw;
+    max-width: 100vw;
+    min-width: 0;
+    margin: 0;
+    background: #fff;
+    min-height: 100vh;
+    padding-bottom: 80px; 
+    border-radius: 0;
+}
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>Expert Service</h1>
-    </div>
 
-<!-- Service Options -->
-<div class="service-options">
-    <div class="service-option">
-        <i>?</i>
-        <span>Ask a Question</span>
-    </div>
-    <div class="service-option">
-        <i>&#128197;</i>
-        <span>Book a Consultation</span>
-    </div>
-    <div class="service-option">
-        <i>&#128161;</i>
-        <span>View Tips & Advice</span>
-    </div>
-</div>
-
-<!-- Experts List -->
-<div class="experts">
-    <div class="expert">
-        <img src="images/dr.a.jpeg" alt="Dr. Hassan">
-        <div class="expert-info">
-            <div class="name">Mr Juma lusako</div>
-            <div class="specialty">Soil & irrigation</div>
+    <div class="main-content"><br>
+        <div class="expert-container">
+        <div class="expert-title">Expert service</div>
+        <button class="booked-btn">Booked consultation</button>
+        <div class="experts-label">Experts</div>
+        <div class="expert-list">
+            <div class="expert-card">
+                <div class="expert-avatar"></div>
+                <div class="expert-info">
+                    <div class="expert-name">Dr. Hassan</div>
+                    <div class="expert-specialty">Soil & irrigation</div>
+                </div>
+                <button class="chat-btn">Chat now</button>
+            </div>
+            <div class="expert-card">
+                <div class="expert-avatar"></div>
+                <div class="expert-info">
+                    <div class="expert-name">Dr. kimario</div>
+                    <div class="expert-specialty">Soil & irrigation</div>
+                </div>
+                <button class="chat-btn">Chat now</button>
+            </div>
+            <div class="expert-card">
+                <div class="expert-avatar"></div>
+                <div class="expert-info">
+                    <div class="expert-name">Dr. yusuph</div>
+                    <div class="expert-specialty">Soil & irrigation</div>
+                </div>
+                <button class="chat-btn">Chat now</button>
+            </div>
+            <div class="expert-card">
+                <div class="expert-avatar"></div>
+                <div class="expert-info">
+                    <div class="expert-name">Dr. Hassan</div>
+                    <div class="expert-specialty">Soil & irrigation</div>
+                </div>
+                <button class="chat-btn">Chat now</button>
+            </div>
+            <div class="expert-card">
+                <div class="expert-avatar"></div>
+                <div class="expert-info">
+                    <div class="expert-name">Dr. mariam</div>
+                    <div class="expert-specialty">Soil & irrigation</div>
+                </div>
+                <button class="chat-btn">Chat now</button>
+            </div>
         </div>
-        <button class="chat-btn">Chat now</button>
     </div>
-    <div class="expert">
-        <img src="images/dr c.jpeg" alt="Dr. Kimario">
-        <div class="expert-info">
-            <div class="name">Mr James Kasanga</div>
-            <div class="specialty">Plant pathologist</div>
-        </div>
-        <button class="chat-btn">Chat now</button>
     </div>
-    <div class="expert">
-        <img src="images/dr b.jpeg" alt="Dr. Kimario">
-        <div class="expert-info">
-            <div class="name">Dr. Kimario Urio</div>
-            <div class="specialty">Plant pathologist</div>
-        </div>
-        <button class="chat-btn">Chat now</button>
+    <div class="navbar">
+        <a href="home.html" class="nav"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><br>home</a>
+        <a href="market.html" class="nav"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><br>Market</a>
+        <a href="expert.html" class="nav active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><br>Expert Service</a>
+        <a href="discussion.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><br>community</a>
+        <a href="profile.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><br>profile</a>
     </div>
-</div>
-
-<!-- Bottom Navigation Bar -->
-<!-- <div class="navbar">
-    <a href="home.html" class="nav"> 
-        <img src="icons/icons8-home-50.png" alt="Home Icon"> <br>Home</a>
-    <a href="market.html" class="nav"> 
-        <img src="icons/icons8-cart-48.png" alt="Market Icon"> <br> Market</a>
-    <a href="expert.html" class="nav active"> 
-        <img src="icons/icons8-expert-50.png" alt="Expert Icon"> <br> Expert Service</a>
-    <a href="discussion.html" class="nav"> 
-        <img src="icons/icons8-community-50.png" alt="Community Icon"><br>Community</a>
-    <a href="profile.html" class="nav"> 
-        <img src="icons/icons8-customer-48.png" alt="Profile Icon"><br> Profile</a>
-</div> -->
 </body>
 </html>

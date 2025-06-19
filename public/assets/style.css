@@ -75,6 +75,11 @@ body {
 .product .cart-btn i {
     margin-left: 5px;
 }
+.nav img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
 .navbar {
     position: fixed;
     bottom: 0;

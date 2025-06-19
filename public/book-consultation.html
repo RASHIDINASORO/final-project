@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book a consultation</title>
+    <link rel="stylesheet" href="assets/profile.css">
+    <style>
+        .consult-container {
+            width: 100%;
+            max-width: 350px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px 18px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+        }
+        .consult-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #222;
+        }
+        .consult-label {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 16px 0 6px 0;
+            color: #222;
+        }
+        .consult-select, .consult-btn, .consult-date-btn {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .consult-select {
+            padding: 8px;
+            background: #eee;
+        }
+        .consult-date-btn {
+            background: #68c56b;
+            color: #fff;
+            border: none;
+            padding: 10px 0;
+            margin-right: 8px;
+            width: 48%;
+            display: inline-block;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+        .consult-btn {
+            background: #68c56b;
+            color: #fff;
+            border: none;
+            padding: 12px 0;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .consult-row {
+            display: flex;
+            gap: 10px;
+        }
+        .back-arrow {
+            font-size: 22px;
+            cursor: pointer;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="consult-container">
+        <div>
+            <span class="back-arrow" onclick="window.history.back()">&#8592;</span>
+            <span class="consult-title">Book a consultation</span>
+        </div>
+        <div class="consult-label">Select an Expert</div>
+        <select class="consult-select">
+            <option>choose an expert</option>
+            <option>Expert 1</option>
+            <option>Expert 2</option>
+            <option>Expert 3</option>
+        </select>
+        <div class="consult-label">Select Date and Time</div>
+        <div class="consult-row">
+            <button class="consult-date-btn" onclick="document.getElementById('dateInput').showPicker()">Select Date</button>
+            <button class="consult-date-btn" onclick="document.getElementById('timeInput').showPicker()">Select Time</button>
+        </div>
+        <input type="date" id="dateInput" style="display:none;">
+        <input type="time" id="timeInput" style="display:none;">
+        <button class="consult-btn">Book Consultation</button>
+    </div>
+    <script>
+        // Optional: Show selected date/time on buttons
+        const dateBtn = document.querySelectorAll('.consult-date-btn')[0];
+        const timeBtn = document.querySelectorAll('.consult-date-btn')[1];
+        const dateInput = document.getElementById('dateInput');
+        const timeInput = document.getElementById('timeInput');
+        dateInput.addEventListener('change', () => {
+            dateBtn.textContent = dateInput.value || 'Select Date';
+        });
+        timeInput.addEventListener('change', () => {
+            timeBtn.textContent = timeInput.value || 'Select Time';
+        });
+    </script>
+</body>
+</html>

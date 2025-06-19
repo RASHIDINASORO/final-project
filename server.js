@@ -105,7 +105,14 @@ app.post('/login', (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password.' });
         }
 
-        res.status(200).json({ message: 'Login successful!' });
+        // Send user info (add avatar if you have it in your DB)
+        res.status(200).json({ 
+            message: 'Login successful!',
+            user: {
+                username: user.username,
+                avatar: user.avatar // or user.image, depending on your DB column
+            }
+        });
     });
 });
 

@@ -91,6 +91,11 @@
         .chat-btn:hover {
             background-color: #57a85a;
         }
+        .nav img {
+           width: 30px;
+           height: 30px;
+           vertical-align: middle;
+}
         .navbar {
             position: fixed;
             bottom: 0;
@@ -98,7 +103,7 @@
             display: flex;
             justify-content: space-around;
             background-color: white;
-            border-top: 1px solid #ccc;
+            border-top: 0px solid #ccc;
             padding: 10px 0;
         }
         .navbar a {

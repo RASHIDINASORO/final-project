@@ -93,6 +93,11 @@ body {
 .input-container button:hover {
     background-color: #57a85a;
 }
+.nav img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
 .navbar a {
     text-align: center;
     text-decoration: none;
