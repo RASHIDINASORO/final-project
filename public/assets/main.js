@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Send data to the server
             try {
-                const response = await fetch("http://localhost:3000/login", {
+                const response = await fetch("http://localhost:3000/index", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password }),
