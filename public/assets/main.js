@@ -52,8 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // Get form data
             const email = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
+            const errorDiv = document.getElementById("loginError");
 
-            // Send data to the server
+            // Clear previous error
+            errorDiv.textContent = "";
+
             try {
                 const response = await fetch("http://localhost:3000/index", {
                     method: "POST",
@@ -63,19 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const result = await response.json();
 
-                // Handle response
                 if (response.ok) {
                     // Store user information in localStorage
-                    localStorage.setItem('user', JSON.stringify(result.user));
+                    localStorage.setItem('user', JSON.stringify({ username: result.user.username }));
                     // Redirect to home.html on successful login
                     window.location.href = "home.html";
                 } else {
-                    // Display error message
-                    alert(result.message || "Invalid credentials. Please try again.");
+                    // Display custom error message from server
+                    errorDiv.textContent = result.message || "Invalid credentials. Please try again.";
                 }
             } catch (error) {
                 console.error("Error:", error);
-                alert("An error occurred. Please try again.");
+                errorDiv.textContent = "A server error occurred. Please try again.";
             }
         });
     }
@@ -94,7 +96,7 @@ document.getElementById('recoverForm').addEventListener('submit', function(event
     event.preventDefault();
     const email = document.getElementById('recoverEmail').value.trim();
     alert(`If an account exists for ${email}, recovery instructions have been sent.`);
-    // Optionally, send this email to your backend for processing.
+    // Optionally, send this email to  backend for processing.
 });
 
 // Function to validate the signup form
@@ -180,3 +182,34 @@ localStorage.setItem('user', JSON.stringify({
     username: 'Yusuph Paul', // Replace with actual username
     avatar: 'icons/general profile.jpeg' // Replace with actual avatar path if available
 }));
+
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorDiv.textContent = data.error || 'An unknown error occurred.';
+                } else {
+                    errorDiv.textContent = '';
+                    window.location.href = 'home.html';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Server error. Please try again later.';
+            }
+        });
+    }
+});

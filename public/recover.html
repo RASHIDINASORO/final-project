@@ -13,12 +13,13 @@
                 <input type="email" id="recoverEmail" placeholder="Enter your email" required>
             </div>
             <div class="form-group">
-                <input type="password" id="newPassword" placeholder="Enter new password" required>
+                <input type="password" id="newPassword" placeholder="New password" required>
             </div>
             <div class="form-group">
-                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                <input type="password" id="confirmPassword" placeholder="Confirm password" required>
             </div>
-            <button type="submit" class="btn">Recover Password</button>
+            <div id="recoverError" style="color: red; text-align: center; margin-bottom: 10px;"></div>
+            <button type="submit" class="btn">Reset Password</button>
         </form>
         <div class="signin">
             Remembered your password? <a href="index.html">Login</a>
@@ -31,23 +32,25 @@ document.getElementById('recoverForm').addEventListener('submit', async function
   const email = document.getElementById('recoverEmail').value.trim().toLowerCase();
   const newPassword = document.getElementById('newPassword').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
+  const errorDiv = document.getElementById('recoverError');
+  errorDiv.textContent = "";
 
   // Email format check
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    alert('Please enter a valid email address.');
+    errorDiv.textContent = 'Please enter a valid email address.';
     return;
   }
 
   // Password strength check
   if (newPassword.length < 6) {
-    alert('Password must be at least 6 characters long.');
+    errorDiv.textContent = 'Password must be at least 6 characters long.';
     return;
   }
 
   // Password match check
   if (newPassword !== confirmPassword) {
-    alert('Passwords do not match.');
+    errorDiv.textContent = 'Passwords do not match.';
     return;
   }
 
@@ -61,14 +64,13 @@ document.getElementById('recoverForm').addEventListener('submit', async function
     const data = await response.json();
 
     if (response.ok) {
-      alert('Password has been reset successfully.');
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     } else {
-      alert(data.message || 'Something went wrong. Please try again.');
+      errorDiv.textContent = data.message || 'Recovery failed. Please try again.';
     }
   } catch (error) {
     console.error('Recovery error:', error);
-    alert('Network error. Please try again later.');
+    errorDiv.textContent = 'Network error. Please try again later.';
   }
 });
 </script>

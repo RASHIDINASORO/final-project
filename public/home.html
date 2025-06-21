@@ -9,21 +9,19 @@
     <link rel="stylesheet" href="assets/home.css">
 </head>
 <body>
-    <div id="user-info" style="display:none; align-items:center; gap:12px; padding:16px;">
-        <img id="user-avatar" src="icons/general profile.jpeg" alt="User Avatar" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid #68c56b;">
-        <span id="user-name" style="font-size:18px; font-weight:bold; color:#222;"></span>
+    <div id="user-info" style="display:flex; align-items:center; gap:12px; padding:16px;">
+        <span id="user-name" style="font-weight:bold; font-size:1.2em;"></span>
     </div>
+    
     <!-- Weather -->
 <div class="a">
-     <div class="region">
+    <div class="region">
         <br>
-            <span class="weather">
-             Kilimanjaro, Tanzania <br>
-             30°C
-            <img src="icons/icons8-sun-64.png" alt="">
-             </span>
+        <span class="weather" id="weather-info">
+            Loading weather...
+        </span>
         <br>
-     </div>
+    </div>
 
 <!-- Crops  -->
 <div class="crops">
@@ -69,6 +67,10 @@
         <div class="crop">
             <img src="images/irish.jpeg" alt="Cassava">
             <br><span>irish</span>
+    </div>
+    <div class="crop">
+            <img src="images/cucumber.jpeg" alt="Cassava">
+            <br><span>cucumber</span>
     </div>
 </marquee>
 </div>
@@ -164,15 +166,65 @@
         <a href="discussion.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><br>community</a>
         <a href="profile.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><br>profile</a>
     </div>
+<div style="padding: 16px;">
+    <label for="city-select"><b>Select your city:</b></label>
+    <select id="city-select">
+        <option value="Moshi">Moshi</option>
+        <option value="Arusha">Arusha</option>
+        <option value="Dar es Salaam">Dar es Salaam</option>
+        <option value="Dodoma">Dodoma</option>
+        <option value="Tanga">Tanga</option>
+        <!-- Add more cities as needed -->
+    </select>
+</div>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            document.getElementById('user-info').style.display = 'flex';
-            document.getElementById('user-name').textContent = user.username;
-            document.getElementById('user-avatar').src = user.avatar || 'icons/general profile.jpeg';
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // User name display
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userNameSpan = document.getElementById('user-name');
+    if (user && user.username) {
+        userNameSpan.textContent = `Welcome, ${user.username}!`;
+    } else {
+        userNameSpan.textContent = '';
+    }
+
+    // Weather API integration
+    const apiKey = 'f9e1b406bca87e212a6eae3701270d1f';
+    const country = 'TZ';
+    const weatherInfo = document.getElementById('weather-info');
+    const citySelect = document.getElementById('city-select');
+
+    function fetchWeather(city) {
+        weatherInfo.textContent = 'Loading weather...';
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cod === 200) {
+                    const temp = Math.round(data.main.temp);
+                    const desc = data.weather[0].description;
+                    const icon = data.weather[0].icon;
+                    weatherInfo.innerHTML = `
+                        ${city}, Tanzania <br>
+                        ${temp}°C, ${desc}
+                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="weather icon" style="vertical-align:middle;">
+                    `;
+                } else {
+                    weatherInfo.textContent = 'Weather unavailable';
+                }
+            })
+            .catch(() => {
+                weatherInfo.textContent = 'Weather unavailable';
+            });
+    }
+
+    // Initial fetch
+    fetchWeather(citySelect.value);
+
+    // Update weather when city changes
+    citySelect.addEventListener('change', function() {
+        fetchWeather(this.value);
     });
+});
 </script>
 </body>
 </html>
