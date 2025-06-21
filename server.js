@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Home route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/login.html'));
+    res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 // Initialize SQLite database
@@ -82,7 +82,7 @@ app.post('/signup', async (req, res) => {
 });
 
 // Login route
-app.post('/login', (req, res) => {
+app.post('/index', (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
