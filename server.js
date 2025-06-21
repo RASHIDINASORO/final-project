@@ -6,7 +6,9 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://final-project-sepia-delta.vercel.app'
+}));
 app.use(bodyParser.json());
 
 // Serve static files from "public" folder
