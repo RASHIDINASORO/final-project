@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Role</title>
+    <link rel="stylesheet" href="assets/profile.css">
+    <style>
+        body {
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .role-container {
+            background: #fff;
+            width: 70vw;
+            max-width: 600px;
+            min-width: 280px;
+            min-height: 40vh;
+            padding: 32px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .role-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 24px;
+            color: #68c56b;
+        }
+        .role-btn {
+            display: block;
+            width: 70%;
+            min-width: 180px;
+            margin: 16px auto;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            background: #68c56b;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .role-btn:hover {
+            background: #4ea852;
+        }
+    </style>
+</head>
+<body>
+    <div class="role-container">
+        <div class="role-title">Select your role</div>
+        <button class="role-btn" onclick="selectRole('farmer')">I'm a farmer</button>
+        <button class="role-btn" onclick="selectRole('expert')">I'm an expert</button>
+    </div>
+    <script>
+        function selectRole(role) {
+            if (role === 'farmer') {
+                window.location.href = 'book-consultation.html';
+            } else if (role === 'expert') {
+                window.location.href = 'booked-consultation.html';
+            }
+        }
+    </script>
+</body>
+</html>

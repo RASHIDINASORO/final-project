@@ -20,6 +20,7 @@
         <span class="weather" id="weather-info">
             Loading weather...
         </span>
+        <a href="https://openweathermap.org/">Explore more weather details</a>
         <br>
     </div>
 
@@ -188,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
         userNameSpan.textContent = '';
     }
 
-    // Weather API integration
     const apiKey = 'f9e1b406bca87e212a6eae3701270d1f';
     const country = 'TZ';
     const weatherInfo = document.getElementById('weather-info');
@@ -208,6 +208,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${temp}°C, ${desc}
                         <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="weather icon" style="vertical-align:middle;">
                     `;
+                    // Set dropdown to detected city if present
+                    for (let i = 0; i < citySelect.options.length; i++) {
+                        if (citySelect.options[i].value.toLowerCase() === city.toLowerCase()) {
+                            citySelect.selectedIndex = i;
+                            break;
+                        }
+                    }
                 } else {
                     weatherInfo.textContent = 'Weather unavailable';
                 }
@@ -217,8 +224,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Initial fetch
-    fetchWeather(citySelect.value);
+    // Reverse geocode coordinates to city using OpenWeatherMap's geocoding API
+    function getCityFromCoords(lat, lon) {
+        fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0 && data[0].name) {
+                    fetchWeather(data[0].name);
+                } else {
+                    fetchWeather(citySelect.value);
+                }
+            })
+            .catch(() => {
+                fetchWeather(citySelect.value);
+            });
+    }
+
+    // Try to get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                getCityFromCoords(position.coords.latitude, position.coords.longitude);
+            },
+            error => {
+                // If denied or error, fall back to dropdown
+                fetchWeather(citySelect.value);
+            }
+        );
+    } else {
+        // Geolocation not supported
+        fetchWeather(citySelect.value);
+    }
 
     // Update weather when city changes
     citySelect.addEventListener('change', function() {

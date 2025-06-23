@@ -68,7 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (response.ok) {
                     // Store user information in localStorage
-                    localStorage.setItem('user', JSON.stringify({ username: result.user.username }));
+                    localStorage.setItem('user', JSON.stringify({
+                        username: result.user.username,
+                        phone: result.user.phone
+                    }));
                     // Redirect to home.html on successful login
                     window.location.href = "home.html";
                 } else {
