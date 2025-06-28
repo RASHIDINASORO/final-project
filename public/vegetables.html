@@ -69,6 +69,7 @@
         }
         .search-bar {
             margin-bottom: 20px;
+            width: 95%;
         }
         .search-bar input {
             width: 100%;
@@ -138,6 +139,13 @@
         .cart-btn:hover {
             background: #57a85a;
         }
+        .not-found {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #c00;
+            font-size: 1.2em;
+            padding: 32px 0;
+        }
         @media (max-width: 700px) {
             .sidebar {
                 display: none;
@@ -168,7 +176,7 @@
 
         <!-- Search Bar -->
         <div class="search-bar">
-            <input type="text" placeholder="Search products...">
+            <input type="text" id="searchInput" placeholder="Search products...">
         </div>
 
         <!-- Categories -->
@@ -180,74 +188,74 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="product-grid">
-            <div class="product">
+        <div class="product-grid" id="productGrid">
+            <div class="product" data-name="cabbage">
                 <img src="images/cabbage.jpeg" alt="Cabbage">
                 <div class="name">Cabbage</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="celery">
                 <img src="images/celery.jpeg" alt="Celery">
                 <div class="name">Celery</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="chills">
                 <img src="images/chills.jpeg" alt="Chills">
                 <div class="name">Chills</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="hoho">
                 <img src="images/hoho.jpeg" alt="Hoho">
                 <div class="name">Hoho</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="lettuce">
                 <img src="images/lettuce.jpeg" alt="Lettuce">
                 <div class="name">Lettuce</div>
                 <div class="price">500 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="african egg">
                 <img src="images/chungu.jpeg" alt="African Egg">
                 <div class="name">African Egg</div>
                 <div class="price">2500 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="mushroom">
                 <img src="images/mushroom.jpeg" alt="Mushroom">
                 <div class="name">Mushroom</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="carrot">
                 <img src="images/czrrot.jpeg" alt="Carrot">
                 <div class="name">Carrot</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="spinach">
                 <img src="images/spinach.jpeg" alt="Spinach">
                 <div class="name">Spinach</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="onion">
                 <img src="images/onion.jpeg" alt="Onion">
                 <div class="name">Onion</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="broccoli">
                 <img src="images/proccoli.jpeg" alt="Broccoli">
                 <div class="name">Broccoli</div>
                 <div class="price">2950 Tsh</div>
                 <a href="#" class="cart-btn">Add to Cart</a>
             </div>
-            <div class="product">
+            <div class="product" data-name="tomato">
                 <img src="images/tomato.jpeg" alt="Tomato">
                 <div class="name">Tomato</div>
                 <div class="price">2950 Tsh</div>
@@ -256,5 +264,36 @@
         </div>
         <div style="height: 60px;"></div>
     </div>
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const products = document.querySelectorAll('.product');
+            let hasVisibleProducts = false;
+
+            products.forEach(product => {
+                const name = product.getAttribute('data-name').toLowerCase();
+                if (name.includes(query)) {
+                    product.style.display = 'flex';
+                    hasVisibleProducts = true;
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+
+            const notFoundMessage = document.querySelector('.not-found');
+            if (!hasVisibleProducts) {
+                if (!notFoundMessage) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'not-found';
+                    messageDiv.textContent = 'No products found';
+                    document.getElementById('productGrid').appendChild(messageDiv);
+                }
+            } else {
+                if (notFoundMessage) {
+                    notFoundMessage.remove();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
