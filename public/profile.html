@@ -5,47 +5,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kilimolink</title>
     <link rel="icon" href="icons/download.webp" type="">
-    <link rel="stylesheet" href="assets/profile.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7f7;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
+        }
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 32px 24px 80px 24px;
+            max-width: 900px;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin: 40px auto 0 auto;
+            padding: 32px 24px;
+            max-width: 450px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #68c56b;
+            margin-bottom: 24px;
+        }
+        .profile-avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #e0e0e0 url('icons/icons8-customer-48.png') center/50% no-repeat;
+            margin-bottom: 12px;
+            border: 3px solid #68c56b;
+        }
+        .profile-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .profile-username {
+            color: #888;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+        .edit-profile-btn {
+            background: #68c56b;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 22px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        .edit-profile-btn:hover {
+            background: #57a85a;
+        }
+        .menu {
+            width: 100%;
+            margin-top: 16px;
+        }
+        .menu-item {
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            text-decoration: none;
+            color: #222;
+            font-size: 1.1em;
+            transition: color 0.2s;
+        }
+        .menu-item a:hover {
+            color: #68c56b;
+        }
+        .menu-item i img {
+            width: 28px;
+            height: 28px;
+            vertical-align: middle;
+        }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content, .container {
+                margin-left: 0;
+                padding: 16px 4px 80px 4px;
+                max-width: 100vw;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="title">My Profile</div>
-        <div class="profile-avatar">
-            <div class="avatar"></div>
-            <div class="profile-name">Yusuph Paul</div>
-            <div class="profile-username">@yusuphpaul</div>
-            <button class="edit-profile-btn">Edit Profile</button>
-        </div>
-        <div class="menu">
-            <div class="menu-item">
-                <a href="#">
-                    <span>My Favourites</span>
-                    <i><img src="icons/icons8-like-50.png" alt="Favourites Icon"></i>
-                </a>
+    <div class="sidebar">
+        <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link active"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
+    </div>
+    <div class="main-content">
+        <div class="container">
+            <div class="title">My Profile</div>
+            <div class="profile-avatar">
+                <div class="avatar"></div>
+                <div class="profile-name">Yusuph Paul</div>
+                <div class="profile-username">@yusuphpaul</div>
+                <button class="edit-profile-btn">Edit Profile</button>
             </div>
-            <div class="menu-item">
-                <a href="#">
-                    <span>Location</span>
-                    <i><img src="icons/icons8-location-24.png" alt="Location Icon"></i>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="#">
-                    <span>Saved Tips</span>
-                    <i><img src="icons/icons8-download-24.png" alt="Saved Tips Icon"></i>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="#">
-                    <span>My Role</span>
-                    <i><img src="icons/icons8-user-24.png" alt="Role Icon"></i>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="index.html">
-                    <span>Log Out</span>
-                    <i><img src="icons/icons8-logout-50.png" alt="Logout Icon"></i>
-                </a>
+            <div class="menu">
+                <div class="menu-item">
+                    <a href="#">
+                        <span>My Favourites</span>
+                        <i><img src="icons/icons8-like-50.png" alt="Favourites Icon"></i>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="#">
+                        <span>Location</span>
+                        <i><img src="icons/icons8-location-24.png" alt="Location Icon"></i>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="#">
+                        <span>Saved Tips</span>
+                        <i><img src="icons/icons8-download-24.png" alt="Saved Tips Icon"></i>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="#">
+                        <span>My Role</span>
+                        <i><img src="icons/icons8-user-24.png" alt="Role Icon"></i>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="index.html">
+                        <span>Log Out</span>
+                        <i><img src="icons/icons8-logout-50.png" alt="Logout Icon"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

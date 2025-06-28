@@ -7,6 +7,7 @@
     <style>
         body {
             background: #f9f9f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         .expert-container {
             max-width: 70%;
@@ -23,13 +24,14 @@
             margin: 24px 0 12px 0;
             text-align: center;
             padding-left: 18px;
-            color: #68c56b;
+            color: #000000;
         }
         .booked-btn {
-            width: 90%;
-            margin: 0 auto 18px auto;
-            background:#f3f3f3;
-            color: #222;
+            width: 95%;
+            margin: 10px auto 18px auto;
+            margin-left: 5%;
+            background: #6fc773;
+            color: #eee9e9;
             border: none;
             border-radius: 8px;
             padding: 12px 0;
@@ -39,7 +41,7 @@
             display: block;    
         }
         .booked-btn:hover {
-            background: #6fc773;
+            background: #0766f5;
             color: #fff;
         }
         .experts-label {
@@ -171,7 +173,7 @@
 
         
 .main-content {
-    width: 100vw;
+    width: 90%;
     max-width: 100vw;
     min-width: 0;
     margin: 0;
@@ -179,6 +181,92 @@
     min-height: 100vh;
     padding-bottom: 80px; 
     border-radius: 0;
+    margin-left: 5%;
+}
+/* Sidebar like GitHub style */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 24px;
+    z-index: 1000;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #24292f;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-link img {
+    width: 24px;
+    height: 24px;
+    margin: 0;
+}
+
+.sidebar-link span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sidebar-link.active,
+.sidebar-link:hover {
+    background: #f6f8fa;
+    color: #0969da;
+}
+
+.sidebar-link.active img,
+.sidebar-link:hover img {
+    filter: none;
+}
+
+body {
+    margin-left: 220px !important;
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        position: fixed;
+        flex-direction: row;
+        width: 100vw;
+        height: 60px;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        border-right: none;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    .sidebar-link {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2px;
+        font-size: 12px;
+        padding: 0 8px;
+        margin-bottom: 0;
+    }
+    .sidebar-link span {
+        font-size: 12px;
+    }
+    body {
+        margin-left: 0 !important;
+        margin-bottom: 60px !important;
+    }
 }
     </style>
 </head>
@@ -186,7 +274,7 @@
 
     <div class="main-content"><br>
         <div class="expert-container">
-        <div class="expert-title">Expert service</div>
+        <div class="expert-title">Provided expert services</div>
         <button class="booked-btn" id="bookConsultBtn">Book consultation</button>
         <button class="booked-btn">Booked consultation</button>
         <div class="experts-label">Experts</div>
@@ -234,13 +322,14 @@
         </div>
     </div>
     </div>
-    <div class="navbar">
-        <a href="home.html" class="nav"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><br>home</a>
-        <a href="market.html" class="nav"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><br>Market</a>
-        <a href="expert.html" class="nav active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><br>Expert Service</a>
-        <a href="discussion.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><br>community</a>
-        <a href="profile.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><br>profile</a>
-    </div>
+
+    <div class="sidebar">
+    <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+    <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+    <a href="expert.html" class="sidebar-link active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+    <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+    <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
+</div>
     <script>
     // Add this script before </body>
     document.addEventListener('DOMContentLoaded', function() {

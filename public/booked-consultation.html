@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Booked consultation</title>
-    <link rel="stylesheet" href="assets/profile.css">
     <style>
         body {
             background: #f9f9f9;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         .booked-container {
             max-width: 400px;
@@ -42,7 +43,7 @@
         .consult-avatar {
             width: 48px;
             height: 48px;
-            background: #ddd;
+            background: #ddd url('icons/icons8-customer-48.png') center/60% no-repeat;
             border-radius: 50%;
             margin-right: 12px;
         }
@@ -61,40 +62,111 @@
             font-size: 15px;
             font-weight: 500;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+        .approve-btn:hover {
+            background: #57a85a;
         }
         @media (max-width: 430px) {
             .booked-container {
                 max-width: 100vw;
             }
         }
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
+        }
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
+        }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .booked-container {
+                margin-left: 0;
+                max-width: 100vw;
+            }
+        }
+        .main-content {
+            margin-left: 220px;
+        }
     </style>
 </head>
 <body>
-    <div class="booked-container">
-        <div class="booked-header">
-            <span class="back-arrow" onclick="window.history.back()">&#8592;</span>
-            Booked consultation
-        </div>
-        <div class="consult-list">
-            <div class="consult-card">
-                <div class="consult-avatar"></div>
-                <div class="consult-name">Ally juma</div>
-                <button class="approve-btn">Aprove</button>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <a href="home.html" class="sidebar-link"><img src="icons/download.webp" alt="Home"><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="icons/icons8-cart-48.png" alt="Market"><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link"><img src="icons/icons8-expert-50.png" alt="Expert"><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="icons/icons8-community-50.png" alt="Community"><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="icons/icons8-customer-48.png" alt="Profile"><span>Profile</span></a>
+    </div>
+    <div class="main-content">
+        <div class="booked-container">
+            <div class="booked-header">
+                <span class="back-arrow" onclick="window.history.back()">&#8592;</span>
+                Booked consultation
             </div>
-            <div class="consult-card">
-                <div class="consult-avatar"></div>
-                <div class="consult-name">joel</div>
-                <button class="approve-btn">Aprove</button>
-            </div>
-            <div class="consult-card">
-                <div class="consult-avatar"></div>
-                <div class="consult-name">yusuphu</div>
-                <button class="approve-btn">Aprove</button>
-            </div>
-            <div class="consult-card">
-                <div class="consult-avatar"></div>
-                <div class="consult-name">kendrick</div>
-                <button class="approve-btn">Aprove</button>
+            <div class="consult-list">
+                <div class="consult-card">
+                    <div class="consult-avatar"></div>
+                    <div class="consult-name">Ally juma</div>
+                    <button class="approve-btn">Approve</button>
+                </div>
+                <div class="consult-card">
+                    <div class="consult-avatar"></div>
+                    <div class="consult-name">joel</div>
+                    <button class="approve-btn">Approve</button>
+                </div>
+                <div class="consult-card">
+                    <div class="consult-avatar"></div>
+                    <div class="consult-name">yusuphu</div>
+                    <button class="approve-btn">Approve</button>
+                </div>
+                <div class="consult-card">
+                    <div class="consult-avatar"></div>
+                    <div class="consult-name">kendrick</div>
+                    <button class="approve-btn">Approve</button>
+                </div>
             </div>
         </div>
     </div>

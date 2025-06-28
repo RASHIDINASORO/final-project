@@ -7,73 +7,129 @@
 </head>
 <body>
     <div class="container">
-        <div class="title">Password Recovery</div>
+        <div class="title">Password recovery</div>
         <form id="recoverForm">
-            <div class="form-group">
+            <div class="form-group" id="emailGroup">
                 <input type="email" id="recoverEmail" placeholder="Enter your email" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="codeGroup" style="display:none;">
+                <input type="text" id="recoveryCode" placeholder="Enter code sent to your email" required>
+            </div>
+            <div class="form-group" id="newPasswordGroup" style="display:none;">
                 <input type="password" id="newPassword" placeholder="New password" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="confirmPasswordGroup" style="display:none;">
                 <input type="password" id="confirmPassword" placeholder="Confirm password" required>
             </div>
             <div id="recoverError" style="color: red; text-align: center; margin-bottom: 10px;"></div>
-            <button type="submit" class="btn">Reset Password</button>
+            <button type="submit" class="btn" id="recoverBtn">Send code</button>
         </form>
         <div class="signin">
             Remembered your password? <a href="index.html">Login</a>
         </div>
     </div>
     <script>
-document.getElementById('recoverForm').addEventListener('submit', async function(event) {
-  event.preventDefault();
+        const recoverForm = document.getElementById('recoverForm');
+        const emailGroup = document.getElementById('emailGroup');
+        const codeGroup = document.getElementById('codeGroup');
+        const newPasswordGroup = document.getElementById('newPasswordGroup');
+        const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+        const recoverError = document.getElementById('recoverError');
+        const recoverBtn = document.getElementById('recoverBtn');
 
-  const email = document.getElementById('recoverEmail').value.trim().toLowerCase();
-  const newPassword = document.getElementById('newPassword').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const errorDiv = document.getElementById('recoverError');
-  errorDiv.textContent = "";
+        let step = 1;
+        let email = '';
 
-  // Email format check
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    errorDiv.textContent = 'Please enter a valid email address.';
-    return;
-  }
+        recoverForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            recoverError.textContent = "";
 
-  // Password strength check
-  if (newPassword.length < 6) {
-    errorDiv.textContent = 'Password must be at least 6 characters long.';
-    return;
-  }
+            if (step === 1) {
+                // Validate email format
+                email = document.getElementById('recoverEmail').value.trim().toLowerCase();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    recoverError.style.color = "red";
+                    recoverError.textContent = 'Please enter a valid email address.';
+                    return;
+                }
+                recoverBtn.disabled = true;
+                recoverBtn.textContent = "Sending...";
+                try {
+                    const response = await fetch('/send-recovery-code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    const data = await response.json();
+                    console.log('Send code response:', data); // Debug log
+                    if (response.ok) {
+                        codeGroup.style.display = '';
+                        newPasswordGroup.style.display = '';
+                        confirmPasswordGroup.style.display = '';
+                        emailGroup.querySelector('input').disabled = true;
+                        recoverBtn.textContent = "Reset Password";
+                        step = 2;
+                        recoverError.style.color = "green";
+                        recoverError.textContent = "Code sent! Please check your email for the recovery code.";
+                    } else {
+                        recoverError.style.color = "red";
+                        recoverError.textContent = data.message || 'Failed to send code. Try again.';
+                        recoverBtn.textContent = "Send Code";
+                    }
+                } catch (error) {
+                    recoverError.style.color = "red";
+                    recoverError.textContent = 'Network error. Please try again.';
+                    recoverBtn.textContent = "Send Code";
+                    console.error('Network error:', error); // Debug log
+                }
+                recoverBtn.disabled = false;
+            } else if (step === 2) {
+                const code = document.getElementById('recoveryCode').value.trim();
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
 
-  // Password match check
-  if (newPassword !== confirmPassword) {
-    errorDiv.textContent = 'Passwords do not match.';
-    return;
-  }
-
-  try {
-    const response = await fetch('/recover-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, newPassword })
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      window.location.href = 'index.html';
-    } else {
-      errorDiv.textContent = data.message || 'Recovery failed. Please try again.';
-    }
-  } catch (error) {
-    console.error('Recovery error:', error);
-    errorDiv.textContent = 'Network error. Please try again later.';
-  }
-});
-</script>
-
+                if (!code) {
+                    recoverError.style.color = "red";
+                    recoverError.textContent = 'Please enter the code sent to your email.';
+                    return;
+                }
+                if (newPassword.length < 6) {
+                    recoverError.style.color = "red";
+                    recoverError.textContent = 'Password must be at least 6 characters long.';
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    recoverError.style.color = "red";
+                    recoverError.textContent = 'Passwords do not match.';
+                    return;
+                }
+                recoverBtn.disabled = true;
+                recoverBtn.textContent = "Resetting...";
+                try {
+                    const response = await fetch('/verify-recovery-code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, code, newPassword })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        alert('Password reset successful! Redirecting to login...');
+                        window.location.href = 'index.html';
+                    } else {
+                        recoverError.style.color = "red";
+                        recoverError.textContent = data.message || 'Invalid code or error. Try again.';
+                        recoverBtn.textContent = "Reset Password";
+                    }
+                } catch (error) {
+                    recoverError.style.color = "red";
+                    recoverError.textContent = 'Network error. Please try again.';
+                    recoverBtn.textContent = "Reset Password";
+                    console.error('Network error:', error); // Debug log
+                }
+                recoverBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

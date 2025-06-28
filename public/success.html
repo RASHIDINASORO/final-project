@@ -5,36 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kilimolink</title>
     <link rel="icon" href="icons/download.webp" type="">
-    <link rel="stylesheet" href="assets/success.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7f7;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
+        }
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 32px 24px 80px 24px;
+            max-width: 900px;
+            min-height: 100vh;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .tab {
+            padding: 10px 18px;
+            background: #e9ecef;
+            border-radius: 8px 8px 0 0;
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab.active, .tab:hover {
+            background: #68c56b;
+            color: #fff;
+        }
+        .stories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+        .story-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            max-width: 500px;
+            min-width: 320px;
+        }
+        .story-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        .story-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .story-text {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #222;
+        }
+        .story-author {
+            font-weight: bold;
+            color: #68c56b;
+            font-size: 1em;
+        }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 16px 4px 80px 4px;
+            }
+            .stories-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .story-card {
+                min-width: 0;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="tabs">
-        <a href="success.html" class="tab active">Success stories</a>
-        <a href="discussion.html" class="tab">Discussion</a>
-        <a href="tips.html" class="tab">Tips & Ideas</a>
+    <div class="sidebar">
+        <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link active"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
     </div>
+    <div class="main-content">
+        <div class="tabs">
+            <a href="success.html" class="tab active">Success stories</a>
+            <a href="discussion.html" class="tab">Discussion</a>
+            <a href="tips.html" class="tab">Tips & Ideas</a>
+        </div>
 
-    <div class="stories-container">
-        <div class="story-card">
-            <img src="images/dr b.jpeg" alt="Success Story Image">
-            <div class="story-content">
-                <div class="story-text">"After experimenting with organic fertilizers, my yields have tripled."</div>
-                <div class="story-author">joel</div>
+        <div class="stories-container">
+            <div class="story-card">
+                <img src="images/dr b.jpeg" alt="Success Story Image">
+                <div class="story-content">
+                    <div class="story-text">"After experimenting with organic fertilizers, my yields have tripled."</div>
+                    <div class="story-author">joel</div>
+                </div>
             </div>
+            <!-- Add more story-card blocks here for more stories -->
         </div>
     </div>
-
-    <!-- <div class="navbar">
-        <a href="home.html" class="nav"> 
-            <img src="icons/icons8-home-50.png" alt="Home Icon"> <br>Home</a>
-        <a href="market.html" class="nav"> 
-            <img src="icons/icons8-cart-48.png" alt="Market Icon"> <br> Market</a>
-        <a href="expert.html" class="nav"> 
-            <img src="icons/icons8-expert-50.png" alt="Expert Icon"> <br> Expert Service</a>
-        <a href="discussion.html" class="nav active"> 
-            <img src="icons/icons8-community-50.png" alt="Community Icon"><br>Community</a>
-        <a href="profile.html" class="nav"> 
-            <img src="icons/icons8-customer-48.png" alt="Profile Icon"><br> Profile</a>
-    </div> -->
 </body>
 </html>

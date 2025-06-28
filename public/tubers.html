@@ -1,105 +1,230 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kilimolink</title>
     <link rel="icon" href="icons/download.webp" type="">
-    <link rel="stylesheet" href="assets/market.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7f7;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
+        }
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 32px 24px 80px 24px;
+            max-width: 900px;
+            min-height: 100vh;
+        }
+        .header {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+            padding: 24px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .tab {
+            padding: 10px 18px;
+            background: #e9ecef;
+            border-radius: 8px 8px 0 0;
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab.active, .tab:hover {
+            background: #68c56b;
+            color: #fff;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+        }
+        .product {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .product img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+        .product .name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .product .price {
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .cart-btn {
+            background: #68c56b;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 18px;
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .cart-btn:hover {
+            background: #57a85a;
+        }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 16px 4px 80px 4px;
+            }
+            .product-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>Tubers in the market</h1>
+    <div class="sidebar">
+        <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link active"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
     </div>
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1>Tubers in the market</h1>
+        </div>
 
-<!-- Search Bar -->
-<div class="search-bar">
-    <input type="text" placeholder="Search products...">
-</div>
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" placeholder="Search products...">
+        </div>
 
-<!-- Categories -->
-<div class="tabs">
-    <a href="market.html" class="tab">Fruits</a>
-    <a href="vegetables.html" class="tab">vegetables</a>
-    <a href="grains.html" class="tab">Grains</a>
-    <a href="tubers.html" class="tab active">tubers</a>
-</div>
+        <!-- Categories -->
+        <div class="tabs">
+            <a href="market.html" class="tab">Fruits</a>
+            <a href="vegetables.html" class="tab">Vegetables</a>
+            <a href="grains.html" class="tab">Grains</a>
+            <a href="tubers.html" class="tab active">Tubers</a>
+        </div>
 
-<!-- Product Grid -->
-<div class="product-grid">
-    <div class="product">
-        <img src="images/yamms.jpeg" alt="pineapple">
-        <div class="name">yams</div>
-        <div class="price">1400 Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-    <div class="product">
-        <img src="images/cassava.jpeg" alt="Banana">
-        <div class="name">cassava</div>
-        <div class="price">500 Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-    <div class="product">
-        <img src="images/irish.jpeg" alt="mango">
-        <div class="name">irish</div>
-        <div class="price">2000 Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-    <div class="product">
-        <img src="images/potato.jpeg" alt="oranges">
-        <div class="name">potato</div>
-        <div class="price">2000 Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-    <div class="product">
-        <img src="images/yam.jpeg" alt="oranges">
-        <div class="name">yams</div>
-        <div class="price">2950 Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-    <div class="product">
-        <img src="images/yamms.jpeg" alt="oranges">
-        <div class="name">yamms</div>
-        <div class="price">2950 Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-    <div class="product">
-        <img src="images/czrrot.jpeg" alt="oranges">
-        <div class="name">carrot</div>
-        <div class="price">500Tsh</div>
-        <a href="#" class="cart-btn">Add to Cart 
-            <!-- <i><img src="icons/icons8-cart-48.png" alt=""></i> -->
-        </a>
-    </div>
-</div>
-<div>
-    <!-- promotion section and other links -->
-     <br>
-     <br>
-     <br>
-     <br>
-</div>
-<!-- Bottom Navigation Bar -->
-<div class="navbar">
-        <a href="home.html" class="nav"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><br>home</a>
-        <a href="market.html" class="nav active"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><br>Market</a>
-        <a href="expert.html" class="nav"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><br>Expert Service</a>
-        <a href="discussion.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><br>community</a>
-        <a href="profile.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><br>profile</a>
+        <!-- Product Grid -->
+        <div class="product-grid">
+            <div class="product">
+                <img src="images/yamms.jpeg" alt="Yamms">
+                <div class="name">Yamms</div>
+                <div class="price">1400 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+            <div class="product">
+                <img src="images/cassava.jpeg" alt="Cassava">
+                <div class="name">Cassava</div>
+                <div class="price">500 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+            <div class="product">
+                <img src="images/irish.jpeg" alt="Irish">
+                <div class="name">Irish</div>
+                <div class="price">2000 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+            <div class="product">
+                <img src="images/potato.jpeg" alt="Potato">
+                <div class="name">Potato</div>
+                <div class="price">2000 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+            <div class="product">
+                <img src="images/yam.jpeg" alt="Yam">
+                <div class="name">Yam</div>
+                <div class="price">2950 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+            <div class="product">
+                <img src="images/yamms.jpeg" alt="Yamms">
+                <div class="name">Yamms</div>
+                <div class="price">2950 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+            <div class="product">
+                <img src="images/czrrot.jpeg" alt="Carrot">
+                <div class="name">Carrot</div>
+                <div class="price">500 Tsh</div>
+                <a href="#" class="cart-btn">Add to Cart</a>
+            </div>
+        </div>
+        <div>
     </div>
 </body>
 </html>

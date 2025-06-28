@@ -1,266 +1,410 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kilimolink</title>
     <link rel="icon" href="icons/download.webp" type="">
-    <link rel="stylesheet" href="assets/home.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7f7;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
+        }
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 32px 24px 80px 24px;
+            max-width: 900px;
+            min-height: 100vh;
+        }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-bottom: 32px;
+            padding: 24px;
+        }
+        .weather-section {
+            background: #90ee90;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 24px;
+            border-radius: 16px;
+            padding: 24px;
+        }
+        .weather-section a {
+            font-size: 1rem;
+            color: #0969da;
+            text-decoration: underline;
+        }
+        .crops-section h2 {
+            margin-top: 0;
+        }
+        .crops-icons {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .crop {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+        .crop img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 4px;
+            border: 2px solid #e0e0e0;
+        }
+        .crop span {
+            font-size: 14px;
+            color: #333;
+        }
+        .market-prices h2 {
+            margin-top: 0;
+        }
+        .market-prices .price-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        .market-prices .price-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 14px;
+        }
+        .market-prices .details {
+            display: flex;
+            flex-direction: column;
+        }
+        .market-prices .name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .market-prices .price {
+            color: #555;
+            font-size: 0.98em;
+        }
+        .city-select-section{
+            text-align: center;
+            margin-top: 24px;
+            margin-bottom: 24px;
+            padding: 1px;
+            background-color: #90ee90;
+        }
+        #city-select {
+            width: 20%;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
+       
+        .city-select-section label {
+            font-weight: bold;
+        }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 16px 4px 80px 4px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="user-info" style="display:flex; align-items:center; gap:12px; padding:16px;">
-        <span id="user-name" style="font-weight:bold; font-size:1.2em;"></span>
+    <div class="sidebar">
+        <a href="home.html" class="sidebar-link active"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
     </div>
-    
-    <!-- Weather -->
-<div class="a">
-    <div class="region">
-        <br>
-        <span class="weather" id="weather-info">
-            Loading weather...
-        </span>
-        <a href="https://openweathermap.org/">Explore more weather details</a>
-        <br>
+    <div class="main-content">
+        <div id="user-info" style="display:flex; align-items:center; gap:12px; padding-bottom:16px;">
+            <span id="user-name" style="font-weight:bold; font-size:1.2em;"></span>
+        </div>
+        <div class="weather-section section">
+            <span class="weather" id="weather-info">
+                Loading weather...
+            </span>
+            <br>
+            
+            <span class="city-select-section section">
+            <label for="city-select">Select city</label> <br>
+            <select id="city-select">
+                <option value="Moshi">Moshi</option>
+                <option value="Arusha">Arusha</option>
+                <option value="Dar es Salaam">Dar es Salaam</option>
+                <option value="Dodoma">Dodoma</option>
+                <option value="Tanga">Tanga</option>
+                <!-- Add more cities as needed -->
+            </select>
+            </span>
+            <a href="https://openweathermap.org/">Explore more weather details</a>
+        </div>
+        
+        <div class="crops-section section">
+        
+            <h2>Trending Crops in the market</h2>
+            <div class="crops-icons">
+                <div class="crop">
+                    <img src="images/beans.jpeg" alt="Beans">
+                    <span>Beans</span>
+                </div>
+                <div class="crop">
+                    <img src="images/cassava.jpeg" alt="Cassava">
+                    <span>Cassava</span>
+                </div>
+                <div class="crop">
+                    <img src="images/tomato.jpeg" alt="Tomato">
+                    <span>Tomato</span>
+                </div>
+                <div class="crop">
+                    <img src="images/banana.jpg" alt="Banana">
+                    <span>Banana</span>
+                </div>
+                <div class="crop">
+                    <img src="images/cabbage.jpeg" alt="Cabbage">
+                    <span>Cabbage</span>
+                </div>
+                <div class="crop">
+                    <img src="images/hoho.jpeg" alt="Hoho">
+                    <span>Hoho</span>
+                </div>
+                <div class="crop">
+                    <img src="images/mushroom.jpeg" alt="Mushroom">
+                    <span>Mushroom</span>
+                </div>
+                <div class="crop">
+                    <img src="images/onion.jpeg" alt="Onion">
+                    <span>Onion</span>
+                </div>
+                <div class="crop">
+                    <img src="images/oranges.jpeg" alt="Orange">
+                    <span>Orange</span>
+                </div>
+                <div class="crop">
+                    <img src="images/irish.jpeg" alt="Irish">
+                    <span>Irish</span>
+                </div>
+                <div class="crop">
+                    <img src="images/cucumber.jpeg" alt="Cucumber">
+                    <span>Cucumber</span>
+                </div>
+            </div>
+        </div>
+        <div class="market-prices section">
+            <h2>Market Prices</h2>
+            <div class="price-item">
+                <img src="images/kunde.jpeg" alt="Kunde">
+                <div class="details">
+                    <span class="name">Kunde</span>
+                    <span class="price">1500 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/beans.jpeg" alt="Beans">
+                <div class="details">
+                    <span class="name">Beans</span>
+                    <span class="price">2600 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/cassava.jpeg" alt="Cassava">
+                <div class="details">
+                    <span class="name">Cassava</span>
+                    <span class="price">5600 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/tomato.jpeg" alt="Tomatoes">
+                <div class="details">
+                    <span class="name">Tomatoes</span>
+                    <span class="price">1700 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/banana.jpg" alt="Banana">
+                <div class="details">
+                    <span class="name">Banana</span>
+                    <span class="price">5600 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/cabbage.jpeg" alt="Cabbage">
+                <div class="details">
+                    <span class="name">Cabbage</span>
+                    <span class="price">1700 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/hoho.jpeg" alt="Hoho">
+                <div class="details">
+                    <span class="name">Hoho</span>
+                    <span class="price">2600 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/mushroom.jpeg" alt="Mushroom">
+                <div class="details">
+                    <span class="name">Mushroom</span>
+                    <span class="price">5600 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/onion.jpeg" alt="Onion">
+                <div class="details">
+                    <span class="name">Onion</span>
+                    <span class="price">1700 Tsh per Kg</span>
+                </div>
+            </div>
+            <div class="price-item">
+                <img src="images/cucumber.jpeg" alt="Cucumber">
+                <div class="details">
+                    <span class="name">Cucumber</span>
+                    <span class="price">5600 Tsh per Kg</span>
+                </div>
+            </div>
+        </div>
+        
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // User name display
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userNameSpan = document.getElementById('user-name');
+        if (user && user.username) {
+            userNameSpan.textContent = `Welcome, ${user.username}!`;
+        } else {
+            userNameSpan.textContent = '';
+        }
 
-<!-- Crops  -->
-<div class="crops">
-    <h2>Trending Crops in the market</h2>
-     <marquee behavior="alternate" direction="left">
-     <div class="crops-icons">
-        <div class="crop">
-            <img src="images/beans.jpeg" alt="Maize">
-            <br><span>Beans</span>
-        </div>
-        <div class="crop">
-            <img src="images/cassava.jpeg" alt="Cassava">
-            <br><span>Cassava</span>
-        </div>
-        <div class="crop">
-            <img src="images/tomato.jpeg" alt="Tomato">
-            <br><span>Tomato</span>
-        </div>
-        <div class="crop">
-            <img src="images/banana.jpg" alt="Maize">
-            <br><span>Banana</span>
-        </div>
-        <div class="crop">
-            <img src="images/cabbage.jpeg" alt="Rice">
-            <br><span>Cabbage</span>
-        </div>
-        <div class="crop">
-            <img src="images/hoho.jpeg" alt="Cassava">
-            <br><span>hoho</span>
-        </div>
-        <div class="crop">
-            <img src="images/mushroom.jpeg" alt="Tomato">
-            <br><span>mushroom</span>
-        </div>
-        <div class="crop">
-            <img src="images/onion.jpeg" alt="Maize">
-            <br><span>onion</span>
-        </div>
-        <div class="crop">
-            <img src="images/oranges.jpeg" alt="Rice">
-            <br><span>orange</span>
-        </div>
-        <div class="crop">
-            <img src="images/irish.jpeg" alt="Cassava">
-            <br><span>irish</span>
-    </div>
-    <div class="crop">
-            <img src="images/cucumber.jpeg" alt="Cassava">
-            <br><span>cucumber</span>
-    </div>
-</marquee>
-</div>
-</div>
+        const apiKey = 'f9e1b406bca87e212a6eae3701270d1f';
+        const country = 'TZ';
+        const weatherInfo = document.getElementById('weather-info');
+        const citySelect = document.getElementById('city-select');
 
-<!-- Market Prices -->
- <div class="market-prices">
-    <h2>&nbsp;&nbsp; Market Prices</h2>
-    <div class="price-item">
-        <img src="images/kunde.jpeg" alt="Maize">
-        <div class="details">
-            <span class="name">Kunde</span>
-            <span class="price">1500 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/beans.jpeg" alt="Rice">
-        <div class="details">
-            <span class="name">Beans</span>
-            <span class="price">2600 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/cassava.jpeg" alt="Cassava">
-        <div class="details">
-            <span class="name">Cassava</span>
-            <span class="price">5600 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/tomato.jpeg" alt="Tomatoes">
-        <div class="details">
-            <span class="name">Tomatoes</span>
-            <span class="price">1700 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/banana.jpg" alt="Cassava">
-        <div class="details">
-            <span class="name">Banana</span>
-            <span class="price">5600 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/cabbage.jpeg" alt="Tomatoes">
-        <div class="details">
-            <span class="name">cabbage</span>
-            <span class="price">1700 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/hoho.jpeg" alt="Rice">
-        <div class="details">
-            <span class="name">Hoho</span>
-            <span class="price">2600 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/mushroom.jpeg" alt="Cassava">
-        <div class="details">
-            <span class="name">mushroom</span>
-            <span class="price">5600 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/onion.jpeg" alt="Tomatoes">
-        <div class="details">
-            <span class="name">onion</span>
-            <span class="price">1700 Tsh per Kg</span>
-        </div>
-    </div>
-    <div class="price-item">
-        <img src="images/cucumber.jpeg" alt="Cassava">
-        <div class="details">
-            <span class="name">cucumber</span>
-            <span class="price">5600 Tsh per Kg</span>
-        </div>
-    </div>
-</div>
-<div>
-    <!-- promotion and other links -->
-     <br>
-     <br>
-     <br>
-     <br>
-</div>
-
-<!-- Bottom Navigation Bar -->
-<div class="navbar">
-        <a href="home.html" class="nav active"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><br>home</a>
-        <a href="market.html" class="nav"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><br>Market</a>
-        <a href="expert.html" class="nav"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><br>Expert Service</a>
-        <a href="discussion.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><br>community</a>
-        <a href="profile.html" class="nav"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><br>profile</a>
-    </div>
-<div style="padding: 16px;">
-    <label for="city-select"><b>Select your city:</b></label>
-    <select id="city-select">
-        <option value="Moshi">Moshi</option>
-        <option value="Arusha">Arusha</option>
-        <option value="Dar es Salaam">Dar es Salaam</option>
-        <option value="Dodoma">Dodoma</option>
-        <option value="Tanga">Tanga</option>
-        <!-- Add more cities as needed -->
-    </select>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // User name display
-    const user = JSON.parse(localStorage.getItem('user'));
-    const userNameSpan = document.getElementById('user-name');
-    if (user && user.username) {
-        userNameSpan.textContent = `Welcome, ${user.username}!`;
-    } else {
-        userNameSpan.textContent = '';
-    }
-
-    const apiKey = 'f9e1b406bca87e212a6eae3701270d1f';
-    const country = 'TZ';
-    const weatherInfo = document.getElementById('weather-info');
-    const citySelect = document.getElementById('city-select');
-
-    function fetchWeather(city) {
-        weatherInfo.textContent = 'Loading weather...';
-        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.cod === 200) {
-                    const temp = Math.round(data.main.temp);
-                    const desc = data.weather[0].description;
-                    const icon = data.weather[0].icon;
-                    weatherInfo.innerHTML = `
-                        ${city}, Tanzania <br>
-                        ${temp}°C, ${desc}
-                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="weather icon" style="vertical-align:middle;">
-                    `;
-                    // Set dropdown to detected city if present
-                    for (let i = 0; i < citySelect.options.length; i++) {
-                        if (citySelect.options[i].value.toLowerCase() === city.toLowerCase()) {
-                            citySelect.selectedIndex = i;
-                            break;
+        function fetchWeather(city) {
+            weatherInfo.textContent = 'Loading weather...';
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cod === 200) {
+                        const temp = Math.round(data.main.temp);
+                        const desc = data.weather[0].description;
+                        const icon = data.weather[0].icon;
+                        weatherInfo.innerHTML = `
+                            ${city}, Tanzania <br>
+                            ${temp}°C, ${desc}
+                            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="weather icon" style="vertical-align:middle;">
+                        `;
+                        // Set dropdown to detected city if present
+                        for (let i = 0; i < citySelect.options.length; i++) {
+                            if (citySelect.options[i].value.toLowerCase() === city.toLowerCase()) {
+                                citySelect.selectedIndex = i;
+                                break;
+                            }
                         }
+                    } else {
+                        weatherInfo.textContent = 'Weather unavailable';
                     }
-                } else {
+                })
+                .catch(() => {
                     weatherInfo.textContent = 'Weather unavailable';
-                }
-            })
-            .catch(() => {
-                weatherInfo.textContent = 'Weather unavailable';
-            });
-    }
+                });
+        }
 
-    // Reverse geocode coordinates to city using OpenWeatherMap's geocoding API
-    function getCityFromCoords(lat, lon) {
-        fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.length > 0 && data[0].name) {
-                    fetchWeather(data[0].name);
-                } else {
+        // Reverse geocode coordinates to city using OpenWeatherMap's geocoding API
+        function getCityFromCoords(lat, lon) {
+            fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0 && data[0].name) {
+                        fetchWeather(data[0].name);
+                    } else {
+                        fetchWeather(citySelect.value);
+                    }
+                })
+                .catch(() => {
+                    fetchWeather(citySelect.value);
+                });
+        }
+
+        // Try to get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    getCityFromCoords(position.coords.latitude, position.coords.longitude);
+                },
+                error => {
+                    // If denied or error, fall back to dropdown
                     fetchWeather(citySelect.value);
                 }
-            })
-            .catch(() => {
-                fetchWeather(citySelect.value);
-            });
-    }
+            );
+        } else {
+            // Geolocation not supported
+            fetchWeather(citySelect.value);
+        }
 
-    // Try to get user's location
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                getCityFromCoords(position.coords.latitude, position.coords.longitude);
-            },
-            error => {
-                // If denied or error, fall back to dropdown
-                fetchWeather(citySelect.value);
-            }
-        );
-    } else {
-        // Geolocation not supported
-        fetchWeather(citySelect.value);
-    }
-
-    // Update weather when city changes
-    citySelect.addEventListener('change', function() {
-        fetchWeather(this.value);
+        // Update weather when city changes
+        citySelect.addEventListener('change', function() {
+            fetchWeather(this.value);
+        });
     });
-});
-</script>
+    </script>
 </body>
 </html>

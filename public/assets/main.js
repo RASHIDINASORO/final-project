@@ -215,4 +215,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Reset forms after submit
+    document.querySelectorAll("form").forEach(function(form) {
+        form.addEventListener("submit", function(e) {
+            setTimeout(() => form.reset(), 100);
+        });
+    });
 });

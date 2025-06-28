@@ -3,15 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <title>Book a consultation</title>
-    <link rel="stylesheet" href="assets/profile.css">
-    <!-- Use Roboto Mono for receipt font -->
+    <link rel="icon" href="icons/download.webp" type="">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7f7;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
+        }
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 32px 24px 80px 24px;
+            max-width: 900px;
+            min-height: 100vh;
+        }
         .consult-container {
-            width: 70%;
-            height: 70%;
-            /*max-width: 350px;*/
+            width: 100%;
+            max-width: 450px;
             margin: 40px auto;
             background: #fff;
             border-radius: 8px;
@@ -119,6 +171,16 @@
             cursor: pointer;
             font-family: 'Roboto Mono', monospace;
         }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content, .consult-container {
+                margin-left: 0;
+                padding: 16px 4px 80px 4px;
+                max-width: 100vw;
+            }
+        }
         @media print {
             body * { visibility: hidden; }
             #consultation-receipt, #consultation-receipt * { visibility: visible; }
@@ -128,28 +190,37 @@
     </style>
 </head>
 <body>
-    <div class="consult-container">
-        <div>
-            <span class="back-arrow" onclick="window.history.back()"></span>
-            <span class="consult-title">Book a consultation</span>
-        </div>
-        <div class="consult-label"></div>
-        <select class="consult-select">
-            <option>choose an expert</option>
-            <option>Expert 1</option>
-            <option>Expert 2</option>
-            <option>Expert 3</option>
-        </select>
-        <div class="consult-label">Select date and time</div>
-        <div class="consult-row">
-            <button class="consult-date-btn" onclick="document.getElementById('dateInput').showPicker()">Select date</button>
-            <button class="consult-date-btn" onclick="document.getElementById('timeInput').showPicker()">Select time</button>
-        </div>
-        <input type="date" id="dateInput" style="display:none;">
-        <input type="time" id="timeInput" style="display:none;">
-        <button class="consult-btn" id="bookConsultationBtn">Book consultation</button>
-        <div id="consultation-receipt" style="display:none;">
-            <!-- Receipt details will appear here -->
+    <div class="sidebar">
+        <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
+    </div>
+    <div class="main-content">
+        <div class="consult-container">
+            <div>
+                <span class="back-arrow" onclick="window.history.back()">&#8592;</span>
+                <span class="consult-title">Book a consultation</span>
+            </div>
+            <div class="consult-label"></div>
+            <select class="consult-select">
+                <option>choose an expert</option>
+                <option>Expert 1</option>
+                <option>Expert 2</option>
+                <option>Expert 3</option>
+            </select>
+            <div class="consult-label">Select date and time</div>
+            <div class="consult-row">
+                <button class="consult-date-btn" onclick="document.getElementById('dateInput').showPicker()">Select date</button>
+                <button class="consult-date-btn" onclick="document.getElementById('timeInput').showPicker()">Select time</button>
+            </div>
+            <input type="date" id="dateInput" style="display:none;">
+            <input type="time" id="timeInput" style="display:none;">
+            <button class="consult-btn" id="bookConsultationBtn">Book consultation</button>
+            <div id="consultation-receipt" style="display:none;">
+                <!-- Receipt details will appear here -->
+            </div>
         </div>
     </div>
     <script>

@@ -4,6 +4,7 @@ const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer'); // email line
 
 const app = express();
 app.use(cors({
@@ -147,6 +148,95 @@ app.post('/recover-password', async (req, res) => {
             }
             res.status(200).json({ message: 'Password updated successfully!' });
         });
+    });
+});
+
+// In-memory store for recovery codes (for demo; use Redis or DB in production)
+const recoveryCodes = {};
+
+// Utility to generate a 6-digit code
+function generateCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Configure nodemailer transporter (use your real email and app password)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'rashidinasoro912@gmail.com', // Gmail
+        pass: 'plih uypr mcsk zrjy'         //  App Password 
+    }
+});
+
+// Send recovery email using nodemailer
+function sendRecoveryEmail(email, code) {
+    const mailOptions = {
+        from: '"Kilimolink Support" <rashidinasoro912gmail.com>',
+        to: email,
+        subject: 'Your Kilimolink Password Recovery Code',
+        text: `Your password recovery code is: ${code}\n\nThis code will expire in 10 minutes.`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending recovery email:', error);
+        } else {
+            console.log('Recovery email sent:', info.response);
+        }
+    });
+}
+
+// Step 1: Send recovery code to user's email
+app.post('/send-recovery-code', (req, res) => {
+    const email = (req.body.email || '').trim().toLowerCase();
+    console.log('Received password recovery request for:', email); // Debug log
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required.' });
+    }
+
+    db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ message: 'Database error.' });
+        }
+        if (!user) {
+            console.log('Email not found:', email);
+            return res.status(404).json({ message: 'Email not found.' });
+        }
+
+        const code = generateCode();
+        recoveryCodes[email] = { code, expires: Date.now() + 10 * 60 * 1000 };
+
+        sendRecoveryEmail(email, code);
+
+        res.status(200).json({ message: 'Recovery code sent to your email.' });
+    });
+});
+
+// Step 2: Verify code and reset password
+app.post('/verify-recovery-code', async (req, res) => {
+    const email = (req.body.email || '').trim().toLowerCase();
+    const code = (req.body.code || '').trim();
+    const newPassword = req.body.newPassword;
+
+    if (!email || !code || !newPassword) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    const record = recoveryCodes[email];
+    if (!record || record.code !== code || Date.now() > record.expires) {
+        return res.status(400).json({ message: 'Invalid or expired code.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    db.run('UPDATE users SET password = ? WHERE email = ?', [hashedPassword, email], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Error updating password.' });
+        }
+        delete recoveryCodes[email];
+        res.status(200).json({ message: 'Password reset successful!' });
     });
 });
 
