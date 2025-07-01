@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kilimolink Admin Dashboard</title>
+    <link rel="icon" href="icons/download.webp" type="">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7f7;
+        }
+        .admin-header {
+            width: 93%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(90deg, #28a745 0%, #68c56b 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px 18px 32px;
+            box-shadow: 0 2px 12px rgba(40,167,69,0.10);
+            z-index: 1100;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+        }
+        .admin-header .company {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .admin-header .company img {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #fff;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+        }
+        .admin-header .company span {
+            font-size: 1.55em;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 8px rgba(40,167,69,0.10);
+        }
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 220px;
+            height: calc(100vh - 80px);
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: #218838;
+            text-decoration: none;
+            font-size: 1.08em;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
+        }
+        .sidebar-link img {
+            width: 22px;
+            height: 22px;
+        }
+        .admin-main-content {
+            margin-left: 220px;
+            padding: 112px 24px 40px 24px;
+            min-height: 100vh;
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .section-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #218838;
+            margin-bottom: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+        th {
+            background: #f6f8fa;
+            color: #218838;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .action-btn {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 0.98em;
+            margin-right: 6px;
+            transition: background 0.2s;
+        }
+        .action-btn:hover {
+            background: #218838;
+        }
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+            .admin-main-content {
+                margin-left: 0;
+                padding: 100px 4px 40px 4px;
+            }
+            .admin-header {
+                padding: 12px 10px 12px 10px;
+                border-radius: 0 0 14px 14px;
+            }
+            .admin-header .company img {
+                width: 34px;
+                height: 34px;
+            }
+            .admin-header .company span {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="company">
+            <img src="icons/download.webp" alt="Kilimolink Logo">
+            <span>Kilimolink admin</span>
+        </div>
+        <div style="font-size:1.1em;font-weight:500;">Welcome, Admin</div>
+    </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="#" class="sidebar-link active" data-section="dashboard"><img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png">Dashboard</a>
+        <a href="#" class="sidebar-link" data-section="users"><img src="https://cdn-icons-png.flaticon.com/128/747/747376.png">Users</a>
+        <a href="#" class="sidebar-link" data-section="products"><img src="https://cdn-icons-png.flaticon.com/128/3081/3081559.png">Products</a>
+        <a href="#" class="sidebar-link" data-section="orders"><img src="https://cdn-icons-png.flaticon.com/128/3500/3500833.png">Orders</a>
+        <a href="#" class="sidebar-link" data-section="reports"><img src="https://cdn-icons-png.flaticon.com/128/1828/1828970.png">Reports</a>
+        <a href="#" class="sidebar-link" data-section="settings"><img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png">Settings</a>
+        <a href="index.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1828/1828490.png">Logout</a>
+    </div>
+    <!-- Main Content -->
+    <div class="admin-main-content">
+        <!-- Dashboard Section -->
+        <div class="admin-section active" id="dashboard">
+            <div class="section-title">Dashboard overview</div>
+            <p>Welcome to the Kilimolink Admin Dashboard. Use the sidebar to manage users, products, orders, and more.</p>
+            <!-- You can add dashboard stats here -->
+        </div>
+        <!-- Users Section -->
+        <div class="admin-section" id="users">
+            <div class="section-title">Manage Users</div>
+            <div style="margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="text" id="userSearch" placeholder="Search users..." style="padding:7px 12px; border-radius:6px; border:1px solid #c3e6cb; width:220px;">
+                <button class="action-btn" id="addUserBtn" style="background:#218838;">+ Add User</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Full name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable">
+                    <!-- User rows will be loaded here by JS -->
+                </tbody>
+            </table>
+            <!-- Add/Edit User Modal -->
+            <div id="userModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); align-items:center; justify-content:center; z-index:2000;">
+                <div style="background:#fff; border-radius:12px; padding:28px 22px 18px 22px; max-width:340px; width:90vw; box-shadow:0 4px 16px rgba(0,0,0,0.13); position:relative;">
+                    <button onclick="document.getElementById('userModal').style.display='none'" style="position:absolute;top:8px;right:12px;font-size:1.3em;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+                    <h3 id="userModalTitle" style="margin-top:0;color:#218838;">Add User</h3>
+                    <form id="userForm">
+                        <input type="hidden" id="editUserId">
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalFullName" placeholder="Full Name" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="tel" id="modalPhone" placeholder="Phone" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="email" id="modalEmail" placeholder="Email" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="password" id="modalPassword" placeholder="Password" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <button type="submit" class="action-btn" style="width:100%;background:#28a745;">Save</button>
+                    </form>
+                    <div id="userModalMsg" style="color:#c00;margin-top:8px;text-align:center;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Section -->
+        <div class="admin-section" id="products">
+            <div class="section-title">Manage Products</div>
+            <div style="margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="text" id="productSearch" placeholder="Search products..." style="padding:7px 12px; border-radius:6px; border:1px solid #c3e6cb; width:220px;">
+                <button class="action-btn" id="addProductBtn" style="background:#218838;">+ Add Product</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Date Added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTable">
+                    <!-- Product rows will be loaded here by JS -->
+                </tbody>
+            </table>
+            <!-- Add/Edit Product Modal -->
+            <div id="productModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); align-items:center; justify-content:center; z-index:2000;">
+                <div style="background:#fff; border-radius:12px; padding:28px 22px 18px 22px; max-width:340px; width:90vw; box-shadow:0 4px 16px rgba(0,0,0,0.13); position:relative;">
+                    <button onclick="document.getElementById('productModal').style.display='none'" style="position:absolute;top:8px;right:12px;font-size:1.3em;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+                    <h3 id="productModalTitle" style="margin-top:0;color:#218838;">Add Product</h3>
+                    <form id="productForm">
+                        <input type="hidden" id="editProductId">
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalProductName" placeholder="Product Name" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <select id="modalProductCategory" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                                <option value="">Select Category</option>
+                                <option value="fruits">Fruits</option>
+                                <option value="vegetables">Vegetables</option>
+                                <option value="grains">Grains</option>
+                                <option value="tubers">Tubers</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalProductPrice" placeholder="Price (Tsh)" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalProductImage" placeholder="Image URL (base64 or link)" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <button type="submit" class="action-btn" style="width:100%;background:#28a745;">Save</button>
+                    </form>
+                    <div id="productModalMsg" style="color:#c00;margin-top:8px;text-align:center;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Orders Section -->
+        <div class="admin-section" id="orders">
+            <div class="section-title">Manage Orders</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Product</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTable">
+                    <!-- Order rows will be loaded here by JS -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Reports Section -->
+        <div class="admin-section" id="reports">
+            <div class="section-title">Reports & Analytics</div>
+            <p>Generate and view system reports here.</p>
+        </div>
+        <!-- Settings Section -->
+        <div class="admin-section" id="settings">
+            <div class="section-title">System Settings</div>
+            <p>Configure system preferences and settings here.</p>
+        </div>
+    </div>
+    <script>
+    // Sidebar navigation logic
+    document.querySelectorAll('.sidebar-link[data-section]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+            const section = this.getAttribute('data-section');
+            if (section) {
+                document.getElementById(section).classList.add('active');
+                // Load products when switching to products section
+                if (section === "products") loadProducts();
+                // Load users when switching to users section
+                if (section === "users") loadUsers();
+            }
+        });
+    });
+
+    // --- API helpers ---
+    async function fetchUsers() {
+        const res = await fetch('/api/users');
+        return res.json();
+    }
+    async function addUser(user) {
+        const res = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+        return res.json();
+    }
+    async function updateUser(id, user) {
+        const res = await fetch(`/api/users/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+        return res.json();
+    }
+    async function deleteUser(id) {
+        await fetch(`/api/users/${id}`, { method: 'DELETE' });
+        loadUsers();
+    }
+
+    // --- API helpers for products ---
+    async function fetchProducts() {
+        const res = await fetch('/api/products/all');
+        return res.json();
+    }
+    async function addProduct(product) {
+        const res = await fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(product)
+        });
+        return res.json();
+    }
+    async function updateProduct(id, product) {
+        const res = await fetch(`/api/products/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(product)
+        });
+        return res.json();
+    }
+    async function deleteProduct(id) {
+        await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        loadProducts();
+    }
+
+    // --- UI logic ---
+    let allUsers = [];
+    let filteredUsers = [];
+
+    function renderUsersTable(users) {
+        const usersTable = document.getElementById('usersTable');
+        usersTable.innerHTML = "";
+        users.forEach(u => {
+            usersTable.innerHTML += `<tr>
+                <td>${u.fullName}</td>
+                <td>${u.phone}</td>
+                <td>${u.email}</td>
+                <td>
+                    <button class="action-btn" onclick="editUserModal(${u.id})">Edit</button>
+                    <button class="action-btn" style="background:#c00;" onclick="deleteUser(${u.id})">Delete</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    async function loadUsers() {
+        const data = await fetchUsers();
+        allUsers = data.users || [];
+        filterAndRenderUsers();
+    }
+
+    function filterAndRenderUsers() {
+        const q = document.getElementById('userSearch').value.trim().toLowerCase();
+        filteredUsers = allUsers.filter(u =>
+            u.fullName.toLowerCase().includes(q) ||
+            u.phone.includes(q) ||
+            u.email.toLowerCase().includes(q)
+        );
+        renderUsersTable(filteredUsers);
+    }
+
+    // Modal logic
+    window.editUserModal = function(id) {
+        const user = allUsers.find(u => u.id === id);
+        document.getElementById('userModalTitle').textContent = "Edit User";
+        document.getElementById('editUserId').value = user.id;
+        document.getElementById('modalFullName').value = user.fullName;
+        document.getElementById('modalPhone').value = user.phone;
+        document.getElementById('modalEmail').value = user.email;
+        document.getElementById('modalPassword').value = "";
+        document.getElementById('userModalMsg').textContent = "";
+        document.getElementById('userModal').style.display = "flex";
+    };
+    document.getElementById('addUserBtn').onclick = function() {
+        document.getElementById('userModalTitle').textContent = "Add User";
+        document.getElementById('editUserId').value = "";
+        document.getElementById('modalFullName').value = "";
+        document.getElementById('modalPhone').value = "";
+        document.getElementById('modalEmail').value = "";
+        document.getElementById('modalPassword').value = "";
+        document.getElementById('userModalMsg').textContent = "";
+        document.getElementById('userModal').style.display = "flex";
+    };
+    document.getElementById('userForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editUserId').value;
+        const fullName = document.getElementById('modalFullName').value.trim();
+        const phone = document.getElementById('modalPhone').value.trim();
+        const email = document.getElementById('modalEmail').value.trim();
+        const password = document.getElementById('modalPassword').value;
+        const msg = document.getElementById('userModalMsg');
+        msg.textContent = "";
+
+        // --- Validation ---
+        if (!/^[A-Za-z\s]+$/.test(fullName)) {
+            msg.textContent = "Full name should not contain numbers or special characters.";
+            return;
+        }
+        if (!/^0\d{9}$/.test(phone)) {
+            msg.textContent = "Phone number must start with 0 and be exactly 10 digits.";
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            msg.textContent = "Please enter a valid email address.";
+            return;
+        }
+        if (id === "" && !password) {
+            msg.textContent = "Password is required for new user.";
+            return;
+        }
+        // --- End Validation ---
+
+        let result;
+        if (id === "") {
+            result = await addUser({ fullName, phone, email, password });
+        } else {
+            result = await updateUser(id, { fullName, phone, email, password });
+        }
+        if (result && result.message && result.message.toLowerCase().includes("success")) {
+            document.getElementById('userModal').style.display = "none";
+            loadUsers();
+        } else {
+            msg.textContent = result.message || "Error saving user.";
+        }
+    };
+    document.getElementById('userSearch').oninput = filterAndRenderUsers;
+
+    // --- UI logic for products ---
+    let allProducts = [];
+    let filteredProducts = [];
+
+    function renderProductsTable(products) {
+        const productsTable = document.getElementById('productsTable');
+        productsTable.innerHTML = "";
+        products.forEach(p => {
+            productsTable.innerHTML += `<tr>
+                <td>${p.name}</td>
+                <td>${p.category}</td>
+                <td>${p.price} Tsh</td>
+                <td>${p.created_at ? p.created_at.split('T')[0] : ''}</td>
+                <td>
+                    <button class="action-btn" onclick="editProductModal(${p.id})">Edit</button>
+                    <button class="action-btn" style="background:#c00;" onclick="deleteProduct(${p.id})">Delete</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    async function loadProducts() {
+        const data = await fetchProducts();
+        allProducts = data.products || [];
+        filterAndRenderProducts();
+    }
+
+    function filterAndRenderProducts() {
+        const q = document.getElementById('productSearch').value.trim().toLowerCase();
+        filteredProducts = allProducts.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            p.category.toLowerCase().includes(q) ||
+            p.price.toLowerCase().includes(q)
+        );
+        renderProductsTable(filteredProducts);
+    }
+
+    // Modal logic
+    window.editProductModal = function(id) {
+        const product = allProducts.find(p => p.id === id);
+        document.getElementById('productModalTitle').textContent = "Edit Product";
+        document.getElementById('editProductId').value = product.id;
+        document.getElementById('modalProductName').value = product.name;
+        document.getElementById('modalProductCategory').value = product.category;
+        document.getElementById('modalProductPrice').value = product.price;
+        document.getElementById('modalProductImage').value = product.image;
+        document.getElementById('productModalMsg').textContent = "";
+        document.getElementById('productModal').style.display = "flex";
+    };
+    document.getElementById('addProductBtn').onclick = function() {
+        document.getElementById('productModalTitle').textContent = "Add Product";
+        document.getElementById('editProductId').value = "";
+        document.getElementById('modalProductName').value = "";
+        document.getElementById('modalProductCategory').value = "";
+        document.getElementById('modalProductPrice').value = "";
+        document.getElementById('modalProductImage').value = "";
+        document.getElementById('productModalMsg').textContent = "";
+        document.getElementById('productModal').style.display = "flex";
+    };
+    document.getElementById('productForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editProductId').value;
+        const name = document.getElementById('modalProductName').value.trim();
+        const category = document.getElementById('modalProductCategory').value;
+        const price = document.getElementById('modalProductPrice').value.trim();
+        const image = document.getElementById('modalProductImage').value.trim();
+        const msg = document.getElementById('productModalMsg');
+        msg.textContent = "";
+
+        // --- Validation ---
+        if (!name) {
+            msg.textContent = "Product name is required.";
+            return;
+        }
+        if (!category) {
+            msg.textContent = "Category is required.";
+            return;
+        }
+        if (!/^\d+(\.\d{1,2})?$/.test(price)) {
+            msg.textContent = "Price must be a valid number.";
+            return;
+        }
+        if (!image) {
+            msg.textContent = "Image is required.";
+            return;
+        }
+        // --- End Validation ---
+
+        let result;
+        if (id === "") {
+            result = await addProduct({ name, price, image, category });
+        } else {
+            result = await updateProduct(id, { name, price, image, category });
+        }
+        if (result && result.message && result.message.toLowerCase().includes("success")) {
+            document.getElementById('productModal').style.display = "none";
+            loadProducts();
+        } else {
+            msg.textContent = result.message || "Error saving product.";
+        }
+    };
+    document.getElementById('productSearch').oninput = filterAndRenderProducts;
+
+    // Initial load
+    loadUsers();
+    loadProducts();
+    </script>
+</body>
+</html>

@@ -63,6 +63,18 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             `);
+            db.run(`
+                CREATE TABLE IF NOT EXISTS orders (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    product_id INTEGER,
+                    quantity INTEGER NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id),
+                    FOREIGN KEY (product_id) REFERENCES products (id)
+                )
+            `);
         });
     }
 });
@@ -161,7 +173,7 @@ app.post('/recover-password', async (req, res) => {
     });
 });
 
-// In-memory store for recovery codes (for demo; use Redis or DB in production)
+// In-memory store for recovery codes
 const recoveryCodes = {};
 
 // Utility to generate a 6-digit code
@@ -169,7 +181,7 @@ function generateCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Configure nodemailer transporter (use your real email and app password)
+// Configure nodemailer transporter 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -296,6 +308,113 @@ app.get('/api/products/:category', (req, res) => {
             return res.status(500).json({ message: 'Error fetching products.' });
         }
         res.status(200).json({ products: rows });
+    });
+});
+
+// Get all products
+app.get('/api/products/all', (req, res) => {
+    db.all('SELECT * FROM products ORDER BY created_at DESC', [], (err, rows) => {
+        if (err) return res.status(500).json({ message: 'Error fetching products.' });
+        res.json({ products: rows });
+    });
+});
+
+// Update product
+app.put('/api/products/:id', (req, res) => {
+    const { name, price, image, category } = req.body;
+    const { id } = req.params;
+    if (!name || !price || !image || !category) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+    db.run(
+        'UPDATE products SET name=?, price=?, image=?, category=? WHERE id=?',
+        [name, price, image, category, id],
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Error updating product.' });
+            res.json({ message: 'Product updated successfully!' });
+        }
+    );
+});
+
+// Delete product
+app.delete('/api/products/:id', (req, res) => {
+    db.run('DELETE FROM products WHERE id=?', [req.params.id], function (err) {
+        if (err) return res.status(500).json({ message: 'Error deleting product.' });
+        res.json({ message: 'Product deleted successfully!' });
+    });
+});
+
+// Get all users
+app.get('/api/users', (req, res) => {
+    db.all('SELECT id, fullName, phone, email FROM users ORDER BY id DESC', [], (err, rows) => {
+        if (err) return res.status(500).json({ message: 'Error fetching users.' });
+        res.json({ users: rows });
+    });
+});
+
+// Add user
+app.post('/api/users', async (req, res) => {
+    const { fullName, phone, email, password } = req.body;
+    if (!fullName || !phone || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    db.run(
+        'INSERT INTO users (fullName, phone, email, password) VALUES (?, ?, ?, ?)',
+        [fullName, phone, email.trim().toLowerCase(), hashedPassword],
+        function (err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint')) {
+                    return res.status(409).json({ message: 'Email is already registered.' });
+                }
+                return res.status(500).json({ message: 'Error adding user.' });
+            }
+            res.status(201).json({ message: 'User added successfully!' });
+        }
+    );
+});
+
+// Update user
+app.put('/api/users/:id', async (req, res) => {
+    const { fullName, phone, email, password } = req.body;
+    const { id } = req.params;
+    if (!fullName || !phone || !email) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+    let query, params;
+    if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        query = 'UPDATE users SET fullName=?, phone=?, email=?, password=? WHERE id=?';
+        params = [fullName, phone, email.trim().toLowerCase(), hashedPassword, id];
+    } else {
+        query = 'UPDATE users SET fullName=?, phone=?, email=? WHERE id=?';
+        params = [fullName, phone, email.trim().toLowerCase(), id];
+    }
+    db.run(query, params, function (err) {
+        if (err) return res.status(500).json({ message: 'Error updating user.' });
+        res.json({ message: 'User updated successfully!' });
+    });
+});
+
+// Delete user
+app.delete('/api/users/:id', (req, res) => {
+    db.run('DELETE FROM users WHERE id=?', [req.params.id], function (err) {
+        if (err) return res.status(500).json({ message: 'Error deleting user.' });
+        res.json({ message: 'User deleted successfully!' });
+    });
+});
+
+// Get all orders (join with users and products for names)
+app.get('/api/orders/all', (req, res) => {
+    db.all(`
+        SELECT orders.id, users.fullName as user_name, products.name as product_name, orders.status, orders.created_at
+        FROM orders
+        LEFT JOIN users ON orders.user_id = users.id
+        LEFT JOIN products ON orders.product_id = products.id
+        ORDER BY orders.created_at DESC
+    `, [], (err, rows) => {
+        if (err) return res.status(500).json({ message: 'Error fetching orders.' });
+        res.json({ orders: rows });
     });
 });
 
