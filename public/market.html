@@ -170,9 +170,9 @@
     </div>
     <div class="main-content">
         <!-- Header -->
-        <div class="header">
+        <!-- <div class="header">
             <h1>Fruits in the market</h1>
-        </div>
+        </div> -->
 
         <!-- Search Bar -->
         <div class="search-bar">
@@ -185,6 +185,9 @@
             <a href="vegetables.html" class="tab">Vegetables</a>
             <a href="grains.html" class="tab">Grains</a>
             <a href="tubers.html" class="tab">Tubers</a>
+            <a href="upload.html" class="tab" style="margin-left:auto; background:#28a745; color:#fff; font-weight:bold;">
+                + Upload product
+            </a>
         </div>
 
         <!-- Product Grid -->
@@ -217,6 +220,7 @@
         <div id="notFound" class="not-found" style="display:none;">Product does not exist</div>
         <div style="height: 60px;"></div>
     </div>
+    
     <script>
         const searchInput = document.getElementById('searchInput');
         const productGrid = document.getElementById('productGrid');
@@ -237,7 +241,7 @@
                 }
             });
 
-            // If no product is found, show not found message
+            // If no product is found
             if (!found && query !== '') {
                 notFound.style.display = 'block';
             } else {
@@ -245,5 +249,127 @@
             }
         });
     </script>
+    <script>
+// Helper to get "time ago" string (minimum: seconds)
+function timeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} day${days !== 1 ? 's' : ''} ago`;
+}
+
+// Modal for seller info
+function showSellerModal(name, phone) {
+    let modal = document.getElementById('sellerModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'sellerModal';
+        modal.innerHTML = `
+            <div class="seller-modal-content">
+                <button class="seller-modal-close" onclick="document.getElementById('sellerModal').style.display='none'">&times;</button>
+                <h3>Seller Information</h3>
+                <div id="sellerInfo"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        // Add modal styles
+        const style = document.createElement('style');
+        style.textContent = `
+#sellerModal {
+    position: fixed; z-index: 3000; left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center;
+}
+.seller-modal-content {
+    background: #fff; border-radius: 12px; padding: 28px 22px 18px 22px;
+    max-width: 320px; width: 90vw; box-shadow: 0 4px 16px rgba(0,0,0,0.13); position: relative;
+    text-align: center;
+}
+.seller-modal-close {
+    position: absolute; top: 8px; right: 12px; font-size: 1.3em; color: #888;
+    background: none; border: none; cursor: pointer;
+}
+.seller-modal-content h3 {
+    margin-top: 0; color: #218838;
+}
+.seller-modal-content .seller-label {
+    font-weight: bold; color: #444; margin-right: 4px;
+}
+.seller-modal-content .seller-value {
+    color: #0969da; font-weight: 500;
+}
+        `;
+        document.head.appendChild(style);
+    }
+    document.getElementById('sellerInfo').innerHTML = `
+        <div><span class="seller-label">Name:</span> <span class="seller-value">${name}</span></div>
+        <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">${phone}</span></div>
+    `;
+    modal.style.display = 'flex';
+    // Close modal on outside click
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.style.display = 'none';
+    };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const grid = document.getElementById('productGrid');
+    fetch('/api/products/fruits')
+        .then(res => res.json())
+        .then(data => {
+            if (data.products && data.products.length > 0) {
+                grid.innerHTML = '';
+                data.products.forEach(p => {
+                    const timeBadge = p.created_at
+                        ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
+                        : '';
+                    const sellerName = p.seller_name ? p.seller_name : "Unknown";
+                    const sellerPhone = p.seller_phone ? p.seller_phone : "Not provided";
+                    const productHTML = `
+                        <div class="product" style="position:relative;">
+                            ${timeBadge}
+                            <img src="${p.image}" alt="${p.name}">
+                            <div class="name">${p.name}</div>
+                            <div class="price">${p.price} Tsh</div>
+                            <button class="cart-btn" onclick="showSellerModal('${sellerName.replace(/'/g,"&#39;")}', '${sellerPhone.replace(/'/g,"&#39;")}')">Add to Cart</button>
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', productHTML);
+                });
+            }
+        });
+});
+
+// Add styles for the time badge
+const style = document.createElement('style');
+style.textContent = `
+.time-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(30,30,30,0.85);
+    color: #fff;
+    font-size: 0.98em;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 2px 10px 2px 7px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+}
+.time-badge span {
+    font-size: 1em;
+    margin-right: 2px;
+}
+`;
+document.head.appendChild(style);
+</script>
 </body>
 </html>

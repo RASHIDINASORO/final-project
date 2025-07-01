@@ -223,3 +223,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+const sellerName = p.seller_name ? p.seller_name : "Unknown";
+const sellerPhone = p.seller_phone ? p.seller_phone : "Not provided";
+const productHTML = `
+    <div class="product" style="position:relative;">
+        ${timeBadge}
+        <img src="${p.image}" alt="${p.name}">
+        <div class="name">${p.name}</div>
+        <div class="price">${p.price} Tsh</div>
+        <button class="cart-btn" onclick="showSellerModal('${sellerName.replace(/'/g,"&#39;")}', '${sellerPhone.replace(/'/g,"&#39;")}')">Add to Cart</button>
+    </div>
+`;

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Product - Kilimolink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="assets/market.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .header {
+            text-align: center;
+            margin-top: 30px;
+        }
+        form#uploadForm {
+            max-width: 400px;
+            margin: 30px auto 0;
+            background: #fff;
+            padding: 20px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        form#uploadForm label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        form#uploadForm input[type="text"],
+        form#uploadForm input[type="number"],
+        form#uploadForm select,
+        form#uploadForm input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 14px;
+            font-size: 1em;
+        }
+        form#uploadForm button[type="submit"] {
+            display: inline-block;
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 0;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+            font-weight: bold;
+        }
+        form#uploadForm button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        #uploadMsg {
+            margin-top: 10px;
+            font-size: 0.98em;
+            text-align: center;
+        }
+        /* Footer */
+        footer.footer {
+            background-color: #218838;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Upload Your Crop</h1>
+    </div>
+
+    <form id="uploadForm">
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="price">Price (in TSh):</label>
+        <input type="number" id="price" required min="1">
+
+        <label for="category">Category:</label>
+        <select id="category" required>
+            <option value="">Select Category</option>
+            <option value="fruits">Fruits</option>
+            <option value="vegetables">Vegetables</option>
+            <option value="grains">Grains</option>
+            <option value="tubers">Tubers</option>
+        </select>
+
+        <label for="image">Product Image:</label>
+        <input type="file" id="image" accept="image/*" required>
+
+        <button type="submit">Upload Product</button>
+        <div id="uploadMsg"></div>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const category = document.getElementById('category').value;
+            const imageFile = document.getElementById('image').files[0];
+            const msg = document.getElementById('uploadMsg');
+
+            if (!category) {
+                msg.textContent = "Please select a category.";
+                msg.style.color = "#c00";
+                return;
+            }
+            if (!name || !price || !imageFile) {
+                msg.textContent = "Please fill all fields and select an image.";
+                msg.style.color = "#c00";
+                return;
+            }
+
+            msg.textContent = "Uploading...";
+            msg.style.color = "#218838";
+
+            const reader = new FileReader();
+            reader.onload = function() {
+                const image = reader.result; // base64
+                fetch('/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, price, image, category })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.message === "Product uploaded successfully!") {
+                        msg.textContent = data.message;
+                        msg.style.color = "#218838";
+                        setTimeout(() => {
+                            if (category === "fruits") window.location.href = "market.html";
+                            else if (category === "vegetables") window.location.href = "vegetables.html";
+                            else if (category === "grains") window.location.href = "grains.html";
+                            else if (category === "tubers") window.location.href = "tubers.html";
+                        }, 1000);
+                    } else {
+                        msg.textContent = data.message || "Failed to upload product.";
+                        msg.style.color = "#c00";
+                    }
+                })
+                .catch(() => {
+                    msg.textContent = "Failed to upload product.";
+                    msg.style.color = "#c00";
+                });
+            };
+            reader.onerror = function() {
+                msg.textContent = "Failed to upload image.";
+                msg.style.color = "#c00";
+            };
+            reader.readAsDataURL(imageFile);
+        });
+    </script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p style="color: #fff;">&copy; 2025 Fruits Market. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -146,6 +146,19 @@
             font-size: 1.2em;
             padding: 32px 0;
         }
+        .time-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(30,30,30,0.85);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
         @media (max-width: 700px) {
             .sidebar {
                 display: none;
@@ -170,9 +183,9 @@
     </div>
     <div class="main-content">
         <!-- Header -->
-        <div class="header">
+        <!-- <div class="header">
             <h1>Vegetables in the market</h1>
-        </div>
+        </div> -->
 
         <!-- Search Bar -->
         <div class="search-bar">
@@ -185,6 +198,9 @@
             <a href="vegetables.html" class="tab active">Vegetables</a>
             <a href="grains.html" class="tab">Grains</a>
             <a href="tubers.html" class="tab">Tubers</a>
+            <a href="upload.html" class="tab" style="margin-left:auto; background:#28a745; color:#fff; font-weight:bold;">
+                + Upload product
+            </a>
         </div>
 
         <!-- Product Grid -->
@@ -295,5 +311,129 @@
             }
         });
     </script>
+    <script>
+function timeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} day${days !== 1 ? 's' : ''} ago`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const grid = document.getElementById('productGrid');
+    fetch('/api/products/vegetables')
+        .then(res => res.json())
+        .then(data => {
+            if (data.products && data.products.length > 0) {
+                grid.innerHTML = '';
+                data.products.forEach(p => {
+                    const timeBadge = p.created_at
+                        ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
+                        : '';
+                    const productHTML = `
+                        <div class="product" style="position:relative;">
+                            ${timeBadge}
+                            <img src="${p.image}" alt="${p.name}">
+                            <div class="name">${p.name}</div>
+                            <div class="price">${p.price} Tsh</div>
+                            <a href="#" class="cart-btn">Add to Cart</a>
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', productHTML);
+                });
+            }
+        });
+});
+
+const style = document.createElement('style');
+style.textContent = `
+.time-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(30,30,30,0.85);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+`;
+document.head.appendChild(style);
+    </script>
+    <script>
+// Modal for Add to Cart action
+function showCartModal(productName) {
+    let modal = document.getElementById('cartModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cartModal';
+        modal.innerHTML = `
+            <div class="cart-modal-content">
+                <button class="cart-modal-close" onclick="document.getElementById('cartModal').style.display='none'">&times;</button>
+                <h3>Seller Information</h3>
+                <div id="cartInfo"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        // Modal styles
+        const style = document.createElement('style');
+        style.textContent = `
+#cartModal {
+    position: fixed; z-index: 3000; left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center;
+}
+.cart-modal-content {
+    background: #fff; border-radius: 12px; padding: 28px 22px 18px 22px;
+    max-width: 320px; width: 90vw; box-shadow: 0 4px 16px rgba(0,0,0,0.13); position: relative;
+    text-align: center;
+}
+.cart-modal-close {
+    position: absolute; top: 8px; right: 12px; font-size: 1.3em; color: #888;
+    background: none; border: none; cursor: pointer;
+}
+.cart-modal-content h3 {
+    margin-top: 0; color: #218838;
+}
+.seller-label {
+    font-weight: bold; color: #444; margin-right: 4px;
+}
+.seller-value {
+    color: #0969da; font-weight: 500;
+}
+        `;
+        document.head.appendChild(style);
+    }
+    document.getElementById('cartInfo').innerHTML = `
+        <div><span class="seller-label">Name:</span> <span class="seller-value">Unknown</span></div>
+        <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">Not provided</span></div>
+    `;
+    modal.style.display = 'flex';
+    // Close modal on outside click
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.style.display = 'none';
+    };
+}
+
+// Attach to dynamically loaded products
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('cart-btn')) {
+        e.preventDefault();
+        // Find product name
+        let productDiv = e.target.closest('.product');
+        let name = productDiv ? productDiv.querySelector('.name').textContent : 'Product';
+        showCartModal(name);
+    }
+});
+</script>
 </body>
 </html>

@@ -53,6 +53,16 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     image TEXT
                 )
             `);
+            db.run(`
+                CREATE TABLE IF NOT EXISTS products (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    price TEXT NOT NULL,
+                    image TEXT NOT NULL,
+                    category TEXT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
         });
     }
 });
@@ -257,6 +267,35 @@ app.get('/tips', (req, res) => {
             return res.status(500).json({ message: 'Error fetching tips.' });
         }
         res.status(200).json({ tips: rows });
+    });
+});
+
+// Add product route
+app.post('/api/products', (req, res) => {
+    const { name, price, image, category } = req.body;
+    if (!name || !price || !image || !category) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+    db.run(
+        'INSERT INTO products (name, price, image, category) VALUES (?, ?, ?, ?)',
+        [name, price, image, category],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ message: 'Error saving product.' });
+            }
+            res.status(201).json({ message: 'Product uploaded successfully!' });
+        }
+    );
+});
+
+// Get products by category
+app.get('/api/products/:category', (req, res) => {
+    const category = req.params.category;
+    db.all('SELECT * FROM products WHERE category = ? ORDER BY created_at DESC', [category], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching products.' });
+        }
+        res.status(200).json({ products: rows });
     });
 });
 
