@@ -34,7 +34,9 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     fullName TEXT NOT NULL,
                     phone TEXT NOT NULL,
                     email TEXT NOT NULL UNIQUE,
-                    password TEXT NOT NULL
+                    password TEXT NOT NULL,
+                    role TEXT DEFAULT 'user',
+                    specialization TEXT
                 )
             `);
             db.run(`
@@ -346,7 +348,7 @@ app.delete('/api/products/:id', (req, res) => {
 
 // Get all users
 app.get('/api/users', (req, res) => {
-    db.all('SELECT id, fullName, phone, email FROM users ORDER BY id DESC', [], (err, rows) => {
+    db.all('SELECT id, fullName, phone, email, role FROM users ORDER BY id DESC', [], (err, rows) => {
         if (err) return res.status(500).json({ message: 'Error fetching users.' });
         res.json({ users: rows });
     });
@@ -354,14 +356,14 @@ app.get('/api/users', (req, res) => {
 
 // Add user
 app.post('/api/users', async (req, res) => {
-    const { fullName, phone, email, password } = req.body;
+    const { fullName, phone, email, password, role } = req.body;
     if (!fullName || !phone || !email || !password) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     db.run(
-        'INSERT INTO users (fullName, phone, email, password) VALUES (?, ?, ?, ?)',
-        [fullName, phone, email.trim().toLowerCase(), hashedPassword],
+        'INSERT INTO users (fullName, phone, email, password, role) VALUES (?, ?, ?, ?, ?)',
+        [fullName, phone, email.trim().toLowerCase(), hashedPassword, role || 'user'],
         function (err) {
             if (err) {
                 if (err.message.includes('UNIQUE constraint')) {
@@ -376,7 +378,7 @@ app.post('/api/users', async (req, res) => {
 
 // Update user
 app.put('/api/users/:id', async (req, res) => {
-    const { fullName, phone, email, password } = req.body;
+    const { fullName, phone, email, password, role } = req.body;
     const { id } = req.params;
     if (!fullName || !phone || !email) {
         return res.status(400).json({ message: 'All fields are required.' });
@@ -384,11 +386,11 @@ app.put('/api/users/:id', async (req, res) => {
     let query, params;
     if (password) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        query = 'UPDATE users SET fullName=?, phone=?, email=?, password=? WHERE id=?';
-        params = [fullName, phone, email.trim().toLowerCase(), hashedPassword, id];
+        query = 'UPDATE users SET fullName=?, phone=?, email=?, password=?, role=? WHERE id=?';
+        params = [fullName, phone, email.trim().toLowerCase(), hashedPassword, role || 'user', id];
     } else {
-        query = 'UPDATE users SET fullName=?, phone=?, email=? WHERE id=?';
-        params = [fullName, phone, email.trim().toLowerCase(), id];
+        query = 'UPDATE users SET fullName=?, phone=?, email=?, role=? WHERE id=?';
+        params = [fullName, phone, email.trim().toLowerCase(), role || 'user', id];
     }
     db.run(query, params, function (err) {
         if (err) return res.status(500).json({ message: 'Error updating user.' });
@@ -416,6 +418,50 @@ app.get('/api/orders/all', (req, res) => {
         if (err) return res.status(500).json({ message: 'Error fetching orders.' });
         res.json({ orders: rows });
     });
+});
+
+// Get all success stories
+app.get('/api/success_stories', (req, res) => {
+    db.all('SELECT * FROM success_stories ORDER BY id DESC', [], (err, rows) => {
+        if (err) return res.status(500).json({ message: 'Error fetching stories.' });
+        res.json({ stories: rows });
+    });
+});
+
+// Add a new success story
+app.post('/api/success_stories', (req, res) => {
+    const { author, story, image } = req.body;
+    if (!author || !story) {
+        return res.status(400).json({ message: 'Author and story are required.' });
+    }
+    db.run(
+        'INSERT INTO success_stories (author, story, image) VALUES (?, ?, ?)',
+        [author, story, image],
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Error adding story.' });
+            res.json({ message: 'Story added successfully!' });
+        }
+    );
+});
+
+// Get all tips
+app.get('/api/tips', (req, res) => {
+    db.all('SELECT * FROM tips ORDER BY id DESC', [], (err, rows) => {
+        if (err) return res.status(500).json({ message: 'Error fetching tips.' });
+        res.json({ tips: rows });
+    });
+});
+
+// Get all experts
+app.get('/api/experts', (req, res) => {
+    db.all(
+        `SELECT fullName as name, specialization, phone, email FROM users WHERE role = 'expert'`,
+        [],
+        (err, rows) => {
+            if (err) return res.status(500).json({ message: 'Error fetching experts.' });
+            res.json({ experts: rows });
+        }
+    );
 });
 
 // Start server

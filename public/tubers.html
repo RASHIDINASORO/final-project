@@ -281,19 +281,23 @@ function timeAgo(dateString) {
     return `${days} day${days !== 1 ? 's' : ''} ago`;
 }
 
+// Store loaded products globally
+let loadedProducts = [];
+
 document.addEventListener('DOMContentLoaded', function() {
     const grid = document.getElementById('productGrid');
     fetch('/api/products/tubers')
         .then(res => res.json())
         .then(data => {
-            if (data.products && data.products.length > 0) {
+            loadedProducts = data.products || [];
+            if (loadedProducts.length > 0) {
                 grid.innerHTML = '';
-                data.products.forEach(p => {
+                loadedProducts.forEach(p => {
                     const timeBadge = p.created_at
                         ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
                         : '';
                     const productHTML = `
-                        <div class="product" style="position:relative;">
+                        <div class="product" style="position:relative;" data-id="${p.id}">
                             ${timeBadge}
                             <img src="${p.image}" alt="${p.name}">
                             <div class="name">${p.name}</div>
@@ -333,7 +337,7 @@ document.head.appendChild(style);
 </script>
 <script>
 // Modal for Add to Cart action (same as market.html)
-function showCartModal(productName) {
+function showCartModal(productName, phone) {
     let modal = document.getElementById('cartModal');
     if (!modal) {
         modal = document.createElement('div');
@@ -375,8 +379,8 @@ function showCartModal(productName) {
         document.head.appendChild(style);
     }
     document.getElementById('cartInfo').innerHTML = `
-        <div><span class="seller-label">Name:</span> <span class="seller-value">Unknown</span></div>
-        <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">Not provided</span></div>
+        <div><span class="seller-label">Name:</span> <span class="seller-value">${productName || 'Unknown'}</span></div>
+        <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">${phone || 'Not provided'}</span></div>
     `;
     modal.style.display = 'flex';
     // Close modal on outside click
@@ -389,8 +393,12 @@ function showCartModal(productName) {
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('cart-btn')) {
         e.preventDefault();
-        // Find product name (not used in modal, but could be added)
-        showCartModal();
+        // Find product element and its id
+        const productDiv = e.target.closest('.product');
+        const productId = productDiv ? productDiv.getAttribute('data-id') : null;
+        const product = loadedProducts.find(p => p.id == productId);
+        // Show modal with product details
+        showCartModal(product ? product.name : null, product ? product.phone : null);
     }
 });
 </script>

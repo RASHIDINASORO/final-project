@@ -115,6 +115,56 @@
             color: #68c56b;
             font-size: 1em;
         }
+        #showAddStoryBtn {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            z-index: 1200;
+            background: #218838;
+            color: #fff;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(40,167,69,0.08);
+            transition: background 0.2s;
+        }
+        #showAddStoryBtn:hover {
+            background: #17692c;
+        }
+        #addStoryModal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.18);
+            align-items: center;
+            justify-content: center;
+        }
+        #addStoryModal.active {
+            display: flex;
+        }
+        #addStoryForm {
+            display: block !important;
+            background: #f6f8fa;
+            border-radius: 12px;
+            padding: 28px 22px 18px 22px;
+            max-width: 380px;
+            width: 90vw;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+            position: relative;
+        }
+        #closeStoryModal {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 1.3em;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
         @media (max-width: 700px) {
             .sidebar {
                 display: none;
@@ -131,6 +181,16 @@
                 min-width: 0;
                 width: 100%;
             }
+            #showAddStoryBtn {
+                top: 12px;
+                right: 12px;
+                padding: 8px 12px;
+                font-size: 0.98em;
+            }
+            #addStoryForm {
+                padding: 18px 6px 12px 6px;
+                max-width: 98vw;
+            }
         }
     </style>
 </head>
@@ -142,23 +202,107 @@
         <a href="discussion.html" class="sidebar-link active"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
         <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
     </div>
+    <button id="showAddStoryBtn">+ Share your success story</button>
     <div class="main-content">
         <div class="tabs">
             <a href="success.html" class="tab active">Success stories</a>
             <a href="discussion.html" class="tab">Discussion</a>
             <a href="tips.html" class="tab">Tips & Ideas</a>
         </div>
-
-        <div class="stories-container">
-            <div class="story-card">
-                <img src="images/dr b.jpeg" alt="Success Story Image">
-                <div class="story-content">
-                    <div class="story-text">"After experimenting with organic fertilizers, my yields have tripled."</div>
-                    <div class="story-author">joel</div>
-                </div>
-            </div>
-            <!-- Add more story-card blocks here for more stories -->
+        <div class="stories-container" id="storiesContainer">
+            <!-- Stories will be loaded here by JS -->
         </div>
     </div>
-</body>
+    <!-- Popup Modal for Add Story -->
+    <div id="addStoryModal">
+        <form id="addStoryForm">
+            <button type="button" id="closeStoryModal" title="Close">&times;</button>
+            <h3 style="margin-top:0;color:#218838;">Share Your Success Story</h3>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="storyAuthor" placeholder="Your Name" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+            </div>
+            <div style="margin-bottom:10px;">
+                <textarea id="storyText" placeholder="Your story..." required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;min-height:60px;"></textarea>
+            </div>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="storyImage" placeholder="Image URL (optional)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+            </div>
+            <button type="submit" style="background:#28a745;color:#fff;padding:8px 22px;border:none;border-radius:6px;font-size:1em;cursor:pointer;">Submit</button>
+            <span id="storyMsg" style="margin-left:12px;color:#c00;"></span>
+        </form>
+    </div>
+<script>
+// Show popup modal
+document.getElementById('showAddStoryBtn').onclick = function() {
+    document.getElementById('addStoryModal').classList.add('active');
+};
+// Hide popup modal
+document.getElementById('closeStoryModal').onclick = function() {
+    document.getElementById('addStoryModal').classList.remove('active');
+};
+// Hide modal when clicking outside the form
+document.getElementById('addStoryModal').onclick = function(e) {
+    if (e.target === this) this.classList.remove('active');
+};
+
+// Fetch and render stories
+async function fetchStories() {
+    const res = await fetch('/api/success_stories');
+    return res.json();
+}
+function renderStories(stories) {
+    const container = document.getElementById('storiesContainer');
+    container.innerHTML = "";
+    if (!stories.length) {
+        container.innerHTML = "<div style='color:#888;font-size:1.1em;'>No stories yet. Be the first to share!</div>";
+        return;
+    }
+    stories.forEach(s => {
+        container.innerHTML += `
+            <div class="story-card">
+                <img src="${s.image || 'images/default-story.jpg'}" alt="Success Story Image">
+                <div class="story-content">
+                    <div class="story-text">"${s.story}"</div>
+                    <div class="story-author">${s.author}</div>
+                </div>
+            </div>
+        `;
+    });
+}
+async function loadStories() {
+    const data = await fetchStories();
+    renderStories(data.stories || []);
+}
+loadStories();
+
+// Handle add story form
+document.getElementById('addStoryForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const author = document.getElementById('storyAuthor').value.trim();
+    const story = document.getElementById('storyText').value.trim();
+    const image = document.getElementById('storyImage').value.trim();
+    const msg = document.getElementById('storyMsg');
+    msg.textContent = "";
+    if (!author || !story) {
+        msg.textContent = "Please fill in your name and story.";
+        return;
+    }
+    const res = await fetch('/api/success_stories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author, story, image })
+    });
+    const result = await res.json();
+    if (res.ok) {
+        msg.style.color = "#218838";
+        msg.textContent = "Story added!";
+        document.getElementById('addStoryForm').reset();
+        document.getElementById('addStoryModal').classList.remove('active');
+        loadStories();
+    } else {
+        msg.style.color = "#c00";
+        msg.textContent = result.message || "Error adding story.";
+    }
+};
+</script>
 </html>

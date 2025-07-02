@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kilimolink</title>
+    <title>Kilimolink - Tips & Ideas</title>
     <link rel="icon" href="icons/download.webp" type="">
     <style>
         body {
@@ -128,6 +128,75 @@
             cursor: pointer;
             color: #0969da;
         }
+        /* Add/override styles for expert table and modal */
+        #addTipBtn {
+            background: #218838;
+            color: #fff;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(40,167,69,0.08);
+            transition: background 0.2s;
+            margin-bottom: 18px;
+            float: right;
+        }
+        #addTipBtn:hover {
+            background: #17692c;
+        }
+        #addTipModal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.18);
+            align-items: center;
+            justify-content: center;
+        }
+        #addTipModal.active {
+            display: flex;
+        }
+        #addTipForm {
+            background: #f6f8fa;
+            border-radius: 12px;
+            padding: 28px 22px 18px 22px;
+            max-width: 380px;
+            width: 90vw;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+            position: relative;
+        }
+        #closeTipModal {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 1.3em;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .experts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(40,167,69,0.08);
+        }
+        .experts-table th, .experts-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+        .experts-table th {
+            background: #68c56b;
+            color: #fff;
+        }
+        .experts-table tr:last-child td {
+            border-bottom: none;
+        }
         @media (max-width: 700px) {
             .sidebar {
                 display: none;
@@ -144,6 +213,10 @@
                 min-width: 0;
                 width: 100%;
             }
+            .experts-table th, .experts-table td {
+                font-size: 0.98em;
+                padding: 7px 6px;
+            }
         }
     </style>
 </head>
@@ -152,7 +225,7 @@
         <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
         <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
         <a href="expert.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
-        <a href="discussion.html" class="sidebar-link active"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
         <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
     </div>
     <div class="main-content">
@@ -162,22 +235,169 @@
             <a href="tips.html" class="tab active">Tips & Ideas</a>
         </div>
 
-        <div class="tips-container">
+        <!-- Experts Table -->
+        <h2 style="margin-top:0;color:#218838;">Our Experts</h2>
+        <table class="experts-table" id="expertsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialization</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Experts will be loaded here by JS -->
+            </tbody>
+        </table>
+
+        <!-- Add Tip Button (only for experts) -->
+        <button id="addTipBtn" style="display:none;">+ Share a Tip</button>
+
+        <!-- Add Tip Modal -->
+        <div id="addTipModal">
+            <form id="addTipForm">
+                <button type="button" id="closeTipModal" title="Close">&times;</button>
+                <h3 style="margin-top:0;color:#218838;">Share a Tip or Idea</h3>
+                <div style="margin-bottom:10px;">
+                    <input type="text" id="tipTitle" placeholder="Tip Title" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <textarea id="tipContent" placeholder="Your tip or idea..." required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;min-height:60px;"></textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <input type="text" id="tipImage" placeholder="Image URL (optional)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                </div>
+                <button type="submit" style="background:#28a745;color:#fff;padding:8px 22px;border:none;border-radius:6px;font-size:1em;cursor:pointer;">Submit</button>
+                <span id="tipMsg" style="margin-left:12px;color:#c00;"></span>
+            </form>
+        </div>
+
+        <div class="tips-container" id="tipsContainer">
+            <!-- Tips will be loaded here by JS -->
+        </div>
+    </div>
+<script>
+// --- Only allow experts to share tips ---
+async function getCurrentUser() {
+    // For now, simulate expert 
+    return { role: 'expert' };
+}
+
+// Show add tip button only for experts
+getCurrentUser().then(user => {
+    if(user.role === 'expert') {
+        document.getElementById('addTipBtn').style.display = 'block';
+    }
+});
+
+// Add Tip Modal logic
+document.getElementById('addTipBtn').onclick = function() {
+    document.getElementById('addTipModal').classList.add('active');
+};
+document.getElementById('closeTipModal').onclick = function() {
+    document.getElementById('addTipModal').classList.remove('active');
+};
+document.getElementById('addTipModal').onclick = function(e) {
+    if (e.target === this) this.classList.remove('active');
+};
+
+// Handle add tip form
+document.getElementById('addTipForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const title = document.getElementById('tipTitle').value.trim();
+    const content = document.getElementById('tipContent').value.trim();
+    const image = document.getElementById('tipImage').value.trim();
+    const msg = document.getElementById('tipMsg');
+    msg.textContent = "";
+    if (!title || !content) {
+        msg.textContent = "Please fill in the title and tip.";
+        return;
+    }
+    const res = await fetch('/api/tips', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, image })
+    });
+    const result = await res.json();
+    if (res.ok) {
+        msg.style.color = "#218838";
+        msg.textContent = "Tip added!";
+        document.getElementById('addTipForm').reset();
+        document.getElementById('addTipModal').classList.remove('active');
+        loadTips();
+    } else {
+        msg.style.color = "#c00";
+        msg.textContent = result.message || "Error adding tip.";
+    }
+};
+
+// Fetch and render tips
+async function fetchTips() {
+    const res = await fetch('/api/tips');
+    return res.json();
+}
+function renderTips(tips) {
+    const container = document.getElementById('tipsContainer');
+    container.innerHTML = "";
+    if (!tips.length) {
+        container.innerHTML = "<div style='color:#888;font-size:1.1em;'>No tips yet. Only experts can share tips and ideas.</div>";
+        return;
+    }
+    tips.forEach(t => {
+        container.innerHTML += `
             <div class="tip-card">
-                <img src="images/dr.a.jpeg" alt="Tip Image">
+                <img src="${t.image || 'images/default-tip.jpg'}" alt="Tip Image">
                 <div class="tip-content">
-                    <div class="tip-text">The pest can be controlled by control methods which include traps... <a href="#">read more</a></div>
+                    <div class="tip-text">${t.title ? `<b>${t.title}:</b> ` : ''}${t.content}</div>
                     <div class="tip-actions">
                         <div class="likes">
                             <i>&#128077;</i>
-                            <span>17</span>
+                            <span>${t.likes || 0}</span>
                         </div>
                         <div class="download">&#128190;</div>
                     </div>
                 </div>
             </div>
-            <!-- Add more tip-card blocks here for more tips -->
-        </div>
-    </div>
+        `;
+    });
+}
+async function loadTips() {
+    const data = await fetchTips();
+    renderTips(data.tips || []);
+}
+loadTips();
+
+// Fetch and render experts table
+async function fetchExperts() {
+    // Replace with your actual API endpoint for experts
+    // Example response: [{name, specialization, phone, email}]
+    const res = await fetch('/api/experts');
+    return res.json();
+}
+function renderExperts(experts) {
+    const tbody = document.querySelector('#expertsTable tbody');
+    tbody.innerHTML = "";
+    if (!experts.length) {
+        tbody.innerHTML = "<tr><td colspan='4' style='color:#888;'>No experts found.</td></tr>";
+        return;
+    }
+    experts.forEach(e => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${e.name}</td>
+                <td>${e.specialization || ''}</td>
+                <td>${e.phone || ''}</td>
+                <td>${e.email || ''}</td>
+            </tr>
+        `;
+    });
+}
+async function loadExperts() {
+    const data = await fetchExperts();
+    renderExperts(data.experts || []);
+}
+loadExperts();
+</script>
 </body>
 </html>

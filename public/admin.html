@@ -172,13 +172,27 @@
     </div>
     <!-- Sidebar -->
     <div class="sidebar">
-        <a href="#" class="sidebar-link active" data-section="dashboard"><img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png">Dashboard</a>
-        <a href="#" class="sidebar-link" data-section="users"><img src="https://cdn-icons-png.flaticon.com/128/747/747376.png">Users</a>
-        <a href="#" class="sidebar-link" data-section="products"><img src="https://cdn-icons-png.flaticon.com/128/3081/3081559.png">Products</a>
-        <a href="#" class="sidebar-link" data-section="orders"><img src="https://cdn-icons-png.flaticon.com/128/3500/3500833.png">Orders</a>
-        <a href="#" class="sidebar-link" data-section="reports"><img src="https://cdn-icons-png.flaticon.com/128/1828/1828970.png">Reports</a>
-        <a href="#" class="sidebar-link" data-section="settings"><img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png">Settings</a>
-        <a href="index.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1828/1828490.png">Logout</a>
+        <a href="#" class="sidebar-link active" data-section="dashboard">
+            <img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png" alt="Dashboard Icon">Dashboard
+        </a>
+        <a href="#" class="sidebar-link" data-section="users">
+            <img src="https://cdn-icons-png.flaticon.com/128/747/747376.png" alt="Users Icon">Users
+        </a>
+        <a href="#" class="sidebar-link" data-section="products">
+            <img src="https://cdn-icons-png.flaticon.com/128/3081/3081559.png" alt="Products Icon">Products
+        </a>
+        <a href="#" class="sidebar-link" data-section="orders">
+            <img src="https://cdn-icons-png.flaticon.com/128/3500/3500833.png" alt="Orders Icon">Orders
+        </a>
+        <a href="#" class="sidebar-link" data-section="reports">
+            <img src="https://cdn-icons-png.flaticon.com/128/1828/1828970.png" alt="Reports Icon">Reports
+        </a>
+        <a href="#" class="sidebar-link" data-section="settings">
+            <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings Icon">Settings
+        </a>
+        <a href="index.html" class="sidebar-link">
+            <img src="https://cdn-icons-png.flaticon.com/128/1828/1828490.png" alt="Logout Icon">Logout
+        </a>
     </div>
     <!-- Main Content -->
     <div class="admin-main-content">
@@ -190,7 +204,7 @@
         </div>
         <!-- Users Section -->
         <div class="admin-section" id="users">
-            <div class="section-title">Manage Users</div>
+            <div class="section-title">Manage users</div>
             <div style="margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap;">
                 <input type="text" id="userSearch" placeholder="Search users..." style="padding:7px 12px; border-radius:6px; border:1px solid #c3e6cb; width:220px;">
                 <button class="action-btn" id="addUserBtn" style="background:#218838;">+ Add User</button>
@@ -201,6 +215,7 @@
                         <th>Full name</th>
                         <th>Phone</th>
                         <th>Email</th>
+                        <th>Role</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -226,6 +241,14 @@
                         </div>
                         <div style="margin-bottom:10px;">
                             <input type="password" id="modalPassword" placeholder="Password" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label for="modalRole" style="display:block;margin-bottom:4px;color:#218838;font-weight:500;">Role</label>
+                            <select id="modalRole" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                                <option value="user">User</option>
+                                <option value="expert">Expert</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
                         <button type="submit" class="action-btn" style="width:100%;background:#28a745;">Save</button>
                     </form>
@@ -265,6 +288,7 @@
                             <input type="text" id="modalProductName" placeholder="Product Name" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
                         </div>
                         <div style="margin-bottom:10px;">
+                            <label for="modalProductCategory" style="display:block;margin-bottom:4px;color:#218838;font-weight:500;">Category</label>
                             <select id="modalProductCategory" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
                                 <option value="">Select Category</option>
                                 <option value="fruits">Fruits</option>
@@ -330,6 +354,8 @@
                 if (section === "products") loadProducts();
                 // Load users when switching to users section
                 if (section === "users") loadUsers();
+                // Load orders when switching to orders section
+                if (section === "orders") loadOrders();
             }
         });
     });
@@ -386,6 +412,12 @@
         loadProducts();
     }
 
+    // --- API helpers for orders ---
+    async function fetchOrders() {
+        const res = await fetch('/api/orders/all');
+        return res.json();
+    }
+
     // --- UI logic ---
     let allUsers = [];
     let filteredUsers = [];
@@ -398,6 +430,7 @@
                 <td>${u.fullName}</td>
                 <td>${u.phone}</td>
                 <td>${u.email}</td>
+                <td>${u.role || 'user'}</td>
                 <td>
                     <button class="action-btn" onclick="editUserModal(${u.id})">Edit</button>
                     <button class="action-btn" style="background:#c00;" onclick="deleteUser(${u.id})">Delete</button>
@@ -431,6 +464,7 @@
         document.getElementById('modalPhone').value = user.phone;
         document.getElementById('modalEmail').value = user.email;
         document.getElementById('modalPassword').value = "";
+        document.getElementById('modalRole').value = user.role || "user";
         document.getElementById('userModalMsg').textContent = "";
         document.getElementById('userModal').style.display = "flex";
     };
@@ -441,6 +475,7 @@
         document.getElementById('modalPhone').value = "";
         document.getElementById('modalEmail').value = "";
         document.getElementById('modalPassword').value = "";
+        document.getElementById('modalRole').value = "user";
         document.getElementById('userModalMsg').textContent = "";
         document.getElementById('userModal').style.display = "flex";
     };
@@ -451,6 +486,7 @@
         const phone = document.getElementById('modalPhone').value.trim();
         const email = document.getElementById('modalEmail').value.trim();
         const password = document.getElementById('modalPassword').value;
+        const role = document.getElementById('modalRole').value;
         const msg = document.getElementById('userModalMsg');
         msg.textContent = "";
 
@@ -475,9 +511,9 @@
 
         let result;
         if (id === "") {
-            result = await addUser({ fullName, phone, email, password });
+            result = await addUser({ fullName, phone, email, password, role });
         } else {
-            result = await updateUser(id, { fullName, phone, email, password });
+            result = await updateUser(id, { fullName, phone, email, password, role });
         }
         if (result && result.message && result.message.toLowerCase().includes("success")) {
             document.getElementById('userModal').style.display = "none";
@@ -510,9 +546,9 @@
     }
 
     async function loadProducts() {
-        const data = await fetchProducts();
-        allProducts = data.products || [];
-        filterAndRenderProducts();
+        const res = await fetch('/api/products/all');
+        const data = await res.json();
+        renderProductsTable(data.products || []);
     }
 
     function filterAndRenderProducts() {
@@ -584,6 +620,11 @@
         }
         if (result && result.message && result.message.toLowerCase().includes("success")) {
             document.getElementById('productModal').style.display = "none";
+            // Switch to products section
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('products').classList.add('active');
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.sidebar-link[data-section="products"]').classList.add('active');
             loadProducts();
         } else {
             msg.textContent = result.message || "Error saving product.";
@@ -591,9 +632,41 @@
     };
     document.getElementById('productSearch').oninput = filterAndRenderProducts;
 
+    // --- UI logic for orders ---
+    let allOrders = [];
+
+    function renderOrdersTable(orders) {
+        const ordersTable = document.getElementById('ordersTable');
+        ordersTable.innerHTML = "";
+        orders.forEach(o => {
+            ordersTable.innerHTML += `<tr>
+                <td>${o.id}</td>
+                <td>${o.user_name || ''}</td>
+                <td>${o.product_name || ''}</td>
+                <td>${o.status || ''}</td>
+                <td>${o.created_at ? o.created_at.split('T')[0] : ''}</td>
+                <td>
+                    <button class="action-btn" onclick="viewOrder(${o.id})">View</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    async function loadOrders() {
+        const data = await fetchOrders();
+        allOrders = data.orders || [];
+        renderOrdersTable(allOrders);
+    }
+
+    // Optionally, implement viewOrder(id) for modal/details
+    window.viewOrder = function(id) {
+        alert("Order details for ID: " + id); // Replace with modal/details as needed
+    };
+
     // Initial load
     loadUsers();
     loadProducts();
+    loadOrders();
     </script>
 </body>
 </html>
