@@ -249,76 +249,7 @@
         </div>
         <div class="market-prices section">
             <h2>Market Prices</h2>
-            <div class="price-item">
-                <img src="images/kunde.jpeg" alt="Kunde">
-                <div class="details">
-                    <span class="name">Kunde</span>
-                    <span class="price">1500 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/beans.jpeg" alt="Beans">
-                <div class="details">
-                    <span class="name">Beans</span>
-                    <span class="price">2600 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/cassava.jpeg" alt="Cassava">
-                <div class="details">
-                    <span class="name">Cassava</span>
-                    <span class="price">5600 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/tomato.jpeg" alt="Tomatoes">
-                <div class="details">
-                    <span class="name">Tomatoes</span>
-                    <span class="price">1700 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/banana.jpg" alt="Banana">
-                <div class="details">
-                    <span class="name">Banana</span>
-                    <span class="price">5600 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/cabbage.jpeg" alt="Cabbage">
-                <div class="details">
-                    <span class="name">Cabbage</span>
-                    <span class="price">1700 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/hoho.jpeg" alt="Hoho">
-                <div class="details">
-                    <span class="name">Hoho</span>
-                    <span class="price">2600 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/mushroom.jpeg" alt="Mushroom">
-                <div class="details">
-                    <span class="name">Mushroom</span>
-                    <span class="price">5600 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/onion.jpeg" alt="Onion">
-                <div class="details">
-                    <span class="name">Onion</span>
-                    <span class="price">1700 Tsh per Kg</span>
-                </div>
-            </div>
-            <div class="price-item">
-                <img src="images/cucumber.jpeg" alt="Cucumber">
-                <div class="details">
-                    <span class="name">Cucumber</span>
-                    <span class="price">5600 Tsh per Kg</span>
-                </div>
-            </div>
+            <div id="marketPricesList"></div>
         </div>
         
     </div>
@@ -405,6 +336,26 @@
             fetchWeather(this.value);
         });
     });
+
+    async function loadMarketPricesHome() {
+        const res = await fetch('/api/market_prices');
+        const data = await res.json();
+        const container = document.getElementById('marketPricesList');
+        container.innerHTML = "";
+        (data.prices || []).forEach(p => {
+            container.innerHTML += `
+                <div class="price-item">
+                    <img src="${p.image || 'images/default.jpg'}" alt="${p.name}">
+                    <div class="details">
+                        <span class="name">${p.name}</span>
+                        <span class="price">${p.price}</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    loadMarketPricesHome();
     </script>
 </body>
 </html>

@@ -26,6 +26,8 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
         console.error('Error opening database', err.message);
     } else {
         console.log('Connected to SQLite database.');
+        console.log('Using database file:', require('path').resolve('./kilimo.db'));
+
 
         db.serialize(() => {
             db.run(`
@@ -75,6 +77,15 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (user_id) REFERENCES users (id),
                     FOREIGN KEY (product_id) REFERENCES products (id)
+                )
+            `);
+            db.run(`
+                CREATE TABLE IF NOT EXISTS market_prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    price TEXT NOT NULL,
+                    image TEXT,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             `);
         });
@@ -286,13 +297,13 @@ app.get('/tips', (req, res) => {
 
 // Add product route
 app.post('/api/products', (req, res) => {
-    const { name, price, image, category } = req.body;
-    if (!name || !price || !image || !category) {
+    const { name, price, image, category, phone } = req.body;
+    if (!name || !price || !image || !category || !phone) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
     db.run(
-        'INSERT INTO products (name, price, image, category) VALUES (?, ?, ?, ?)',
-        [name, price, image, category],
+        'INSERT INTO products (name, price, image, category, phone) VALUES (?, ?, ?, ?, ?)',
+        [name, price, image, category, phone],
         function (err) {
             if (err) {
                 return res.status(500).json({ message: 'Error saving product.' });
@@ -462,6 +473,51 @@ app.get('/api/experts', (req, res) => {
             res.json({ experts: rows });
         }
     );
+});
+
+// Get all market prices
+app.get('/api/market_prices', (req, res) => {
+    db.all('SELECT * FROM market_prices ORDER BY name ASC', [], (err, rows) => {
+        if (err) return res.status(500).json({ message: 'Error fetching market prices.' });
+        res.json({ prices: rows });
+    });
+});
+
+// Add a new market price
+app.post('/api/market_prices', (req, res) => {
+    const { name, price, image } = req.body;
+    if (!name || !price) {
+        return res.status(400).json({ message: 'Name and price are required.' });
+    }
+    db.run(
+        'INSERT INTO market_prices (name, price, image) VALUES (?, ?, ?)',
+        [name, price, image],
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Error adding price.' });
+            res.json({ message: 'Market price added successfully!' });
+        }
+    );
+});
+
+// Update a market price
+app.put('/api/market_prices/:id', (req, res) => {
+    const { name, price, image } = req.body;
+    db.run(
+        'UPDATE market_prices SET name=?, price=?, image=?, updated_at=CURRENT_TIMESTAMP WHERE id=?',
+        [name, price, image, req.params.id],
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Error updating price.' });
+            res.json({ message: 'Market price updated successfully!' });
+        }
+    );
+});
+
+// Delete a market price
+app.delete('/api/market_prices/:id', (req, res) => {
+    db.run('DELETE FROM market_prices WHERE id=?', [req.params.id], function (err) {
+        if (err) return res.status(500).json({ message: 'Error deleting price.' });
+        res.json({ message: 'Market price deleted successfully!' });
+    });
 });
 
 // Start server

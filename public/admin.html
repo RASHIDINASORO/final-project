@@ -172,9 +172,9 @@
     </div>
     <!-- Sidebar -->
     <div class="sidebar">
-        <a href="#" class="sidebar-link active" data-section="dashboard">
+        <!-- <a href="#" class="sidebar-link active" data-section="dashboard">
             <img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png" alt="Dashboard Icon">Dashboard
-        </a>
+        </a> -->
         <a href="#" class="sidebar-link" data-section="users">
             <img src="https://cdn-icons-png.flaticon.com/128/747/747376.png" alt="Users Icon">Users
         </a>
@@ -184,14 +184,17 @@
         <a href="#" class="sidebar-link" data-section="orders">
             <img src="https://cdn-icons-png.flaticon.com/128/3500/3500833.png" alt="Orders Icon">Orders
         </a>
-        <a href="#" class="sidebar-link" data-section="reports">
+        <!-- <a href="#" class="sidebar-link" data-section="reports">
             <img src="https://cdn-icons-png.flaticon.com/128/1828/1828970.png" alt="Reports Icon">Reports
         </a>
         <a href="#" class="sidebar-link" data-section="settings">
             <img src="https://cdn-icons-png.flaticon.com/128/2099/2099058.png" alt="Settings Icon">Settings
-        </a>
+        </a> -->
         <a href="index.html" class="sidebar-link">
             <img src="https://cdn-icons-png.flaticon.com/128/1828/1828490.png" alt="Logout Icon">Logout
+        </a>
+        <a href="#" class="sidebar-link" data-section="market-prices-admin">
+            <img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png" alt="Market Price Icon">Market Prices
         </a>
     </div>
     <!-- Main Content -->
@@ -199,7 +202,10 @@
         <!-- Dashboard Section -->
         <div class="admin-section active" id="dashboard">
             <div class="section-title">Dashboard overview</div>
-            <p>Welcome to the Kilimolink Admin Dashboard. Use the sidebar to manage users, products, orders, and more.</p>
+            <p style="text-align:justify; color:#555; font-size:1.1em; margin-bottom:24px;">
+Welcome to the <span style="color:rgb(9, 9, 112)">Kilimolink Admin Dashboard</span>. This platform is designed to empower administrators with a comprehensive suite of tools for managing every aspect of the Kilimolink ecosystem. As an admin, you have access to a robust set of features that allow you to oversee users, products, orders, market prices, and more, ensuring the smooth operation and growth of the platform.
+
+            </p>
             <!-- You can add dashboard stats here -->
         </div>
         <!-- Users Section -->
@@ -338,6 +344,49 @@
             <div class="section-title">System Settings</div>
             <p>Configure system preferences and settings here.</p>
         </div>
+        <!-- Market Prices Section -->
+        <div class="admin-section" id="market-prices-admin">
+            <div class="section-title">Manage Market Prices</div>
+            <div style="margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="text" id="marketPriceSearch" placeholder="Search prices..." style="padding:7px 12px; border-radius:6px; border:1px solid #c3e6cb; width:220px;">
+                <button class="action-btn" id="addMarketPriceBtn" style="background:#218838;">+ Add Price</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="marketPricesTable">
+                    <!-- Market price rows will be loaded here by JS -->
+                </tbody>
+            </table>
+            <!-- Add/Edit Market Price Modal -->
+            <div id="marketPriceModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); align-items:center; justify-content:center; z-index:2000;">
+                <div style="background:#fff; border-radius:12px; padding:28px 22px 18px 22px; max-width:340px; width:90vw; box-shadow:0 4px 16px rgba(0,0,0,0.13); position:relative;">
+                    <button onclick="document.getElementById('marketPriceModal').style.display='none'" style="position:absolute;top:8px;right:12px;font-size:1.3em;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+                    <h3 id="marketPriceModalTitle" style="margin-top:0;color:#218838;">Add Market Price</h3>
+                    <form id="marketPriceForm">
+                        <input type="hidden" id="editMarketPriceId">
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalMarketPriceName" placeholder="Product Name" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalMarketPricePrice" placeholder="Price (e.g. 1500 Tsh per Kg)" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="modalMarketPriceImage" placeholder="Image URL (optional)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                        </div>
+                        <button type="submit" class="action-btn" style="width:100%;background:#28a745;">Save</button>
+                    </form>
+                    <div id="marketPriceModalMsg" style="color:#c00;margin-top:8px;text-align:center;"></div>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
     // Sidebar navigation logic
@@ -356,6 +405,8 @@
                 if (section === "users") loadUsers();
                 // Load orders when switching to orders section
                 if (section === "orders") loadOrders();
+                // Load market prices when switching to market prices section
+                if (section === "market-prices-admin") loadMarketPrices();
             }
         });
     });
@@ -416,6 +467,32 @@
     async function fetchOrders() {
         const res = await fetch('/api/orders/all');
         return res.json();
+    }
+
+    // --- API helpers for market prices ---
+    async function fetchMarketPrices() {
+        const res = await fetch('/api/market_prices');
+        return res.json();
+    }
+    async function addMarketPrice(price) {
+        const res = await fetch('/api/market_prices', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(price)
+        });
+        return res.json();
+    }
+    async function updateMarketPrice(id, price) {
+        const res = await fetch(`/api/market_prices/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(price)
+        });
+        return res.json();
+    }
+    async function deleteMarketPrice(id) {
+        await fetch(`/api/market_prices/${id}`, { method: 'DELETE' });
+        loadMarketPrices();
     }
 
     // --- UI logic ---
@@ -535,7 +612,7 @@
             productsTable.innerHTML += `<tr>
                 <td>${p.name}</td>
                 <td>${p.category}</td>
-                <td>${p.price} Tsh</td>
+                <td>${p.price}</td>
                 <td>${p.created_at ? p.created_at.split('T')[0] : ''}</td>
                 <td>
                     <button class="action-btn" onclick="editProductModal(${p.id})">Edit</button>
@@ -543,12 +620,14 @@
                 </td>
             </tr>`;
         });
+        console.log('Rendering products:', products);
     }
 
     async function loadProducts() {
         const res = await fetch('/api/products/all');
         const data = await res.json();
-        renderProductsTable(data.products || []);
+        allProducts = data.products || [];
+        filterAndRenderProducts();
     }
 
     function filterAndRenderProducts() {
@@ -663,10 +742,89 @@
         alert("Order details for ID: " + id); // Replace with modal/details as needed
     };
 
+    // --- UI logic for market prices ---
+    let allMarketPrices = [];
+    function renderMarketPricesTable(prices) {
+        const table = document.getElementById('marketPricesTable');
+        table.innerHTML = "";
+        prices.forEach(p => {
+            table.innerHTML += `<tr>
+                <td>${p.name}</td>
+                <td>${p.price}</td>
+                <td>${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:40px;height:40px;border-radius:6px;">` : ''}</td>
+                <td>${p.updated_at ? p.updated_at.split('T')[0] : ''}</td>
+                <td>
+                    <button class="action-btn" onclick="editMarketPriceModal(${p.id})">Edit</button>
+                    <button class="action-btn" style="background:#c00;" onclick="deleteMarketPrice(${p.id})">Delete</button>
+                </td>
+            </tr>`;
+        });
+    }
+    async function loadMarketPrices() {
+        const data = await fetchMarketPrices();
+        allMarketPrices = data.prices || [];
+        renderMarketPricesTable(allMarketPrices);
+    }
+    window.editMarketPriceModal = function(id) {
+        const price = allMarketPrices.find(p => p.id === id);
+        document.getElementById('marketPriceModalTitle').textContent = "Edit Market Price";
+        document.getElementById('editMarketPriceId').value = price.id;
+        document.getElementById('modalMarketPriceName').value = price.name;
+        document.getElementById('modalMarketPricePrice').value = price.price;
+        document.getElementById('modalMarketPriceImage').value = price.image || "";
+        document.getElementById('marketPriceModalMsg').textContent = "";
+        document.getElementById('marketPriceModal').style.display = "flex";
+    };
+    document.getElementById('addMarketPriceBtn').onclick = function() {
+        document.getElementById('marketPriceModalTitle').textContent = "Add Market Price";
+        document.getElementById('editMarketPriceId').value = "";
+        document.getElementById('modalMarketPriceName').value = "";
+        document.getElementById('modalMarketPricePrice').value = "";
+        document.getElementById('modalMarketPriceImage').value = "";
+        document.getElementById('marketPriceModalMsg').textContent = "";
+        document.getElementById('marketPriceModal').style.display = "flex";
+    };
+    document.getElementById('marketPriceForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editMarketPriceId').value;
+        const name = document.getElementById('modalMarketPriceName').value.trim();
+        const price = document.getElementById('modalMarketPricePrice').value.trim();
+        const image = document.getElementById('modalMarketPriceImage').value.trim();
+        const msg = document.getElementById('marketPriceModalMsg');
+        msg.textContent = "";
+        if (!name || !price) {
+            msg.textContent = "Name and price are required.";
+            return;
+        }
+        let result;
+        if (id === "") {
+            result = await addMarketPrice({ name, price, image });
+        } else {
+            result = await updateMarketPrice(id, { name, price, image });
+        }
+        if (result && result.message && result.message.toLowerCase().includes("success")) {
+            document.getElementById('marketPriceModal').style.display = "none";
+            loadMarketPrices();
+        } else {
+            msg.textContent = result.message || "Error saving market price.";
+        }
+    };
+    document.getElementById('marketPriceSearch').oninput = filterAndRenderMarketPrices;
+
+    function filterAndRenderMarketPrices() {
+        const q = document.getElementById('marketPriceSearch').value.trim().toLowerCase();
+        const filtered = allMarketPrices.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            p.price.toLowerCase().includes(q)
+        );
+        renderMarketPricesTable(filtered);
+    }
+
     // Initial load
     loadUsers();
     loadProducts();
     loadOrders();
+    loadMarketPrices();
     </script>
 </body>
 </html>

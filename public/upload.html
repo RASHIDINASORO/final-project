@@ -31,6 +31,7 @@
         }
         form#uploadForm input[type="text"],
         form#uploadForm input[type="number"],
+        form#uploadForm input[type="tel"],
         form#uploadForm select,
         form#uploadForm input[type="file"] {
             width: 100%;
@@ -98,6 +99,9 @@
             <option value="tubers">Tubers</option>
         </select>
 
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required>
+
         <label for="image">Product Image:</label>
         <input type="file" id="image" accept="image/*" required>
 
@@ -111,6 +115,7 @@
             const name = document.getElementById('name').value.trim();
             const price = document.getElementById('price').value.trim();
             const category = document.getElementById('category').value;
+            const phone = document.getElementById('phone').value.trim();
             const imageFile = document.getElementById('image').files[0];
             const msg = document.getElementById('uploadMsg');
 
@@ -119,8 +124,14 @@
                 msg.style.color = "#c00";
                 return;
             }
-            if (!name || !price || !imageFile) {
+            if (!name || !price || !imageFile || !phone) {
                 msg.textContent = "Please fill all fields and select an image.";
+                msg.style.color = "#c00";
+                return;
+            }
+            // Phone validation: must start with 0 and be exactly 10 digits
+            if (!/^0\d{9}$/.test(phone)) {
+                msg.textContent = "Phone number must start with 0 and be exactly 10 digits.";
                 msg.style.color = "#c00";
                 return;
             }
@@ -134,7 +145,7 @@
                 fetch('/api/products', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, price, image, category })
+                    body: JSON.stringify({ name, price, image, category, phone })
                 })
                 .then(res => res.json())
                 .then(data => {
