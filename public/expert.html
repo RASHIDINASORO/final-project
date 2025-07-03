@@ -38,7 +38,8 @@
             font-size: 17px;
             font-weight: 500;
             text-align: center;
-            display: block;    
+            display: block;
+            cursor: pointer;
         }
         .booked-btn:hover {
             background: #0766f5;
@@ -69,6 +70,12 @@
             background: #ddd;
             border-radius: 50%;
             margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: #555;
         }
         .expert-info {
             flex: 1;
@@ -92,254 +99,219 @@
             font-weight: 500;
             cursor: pointer;
         }
-        .nav img {
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-          }
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            background-color: white;
-            border-top: 0px solid #ccc;
-            padding: 10px 0;
-        }
-        .navbar a {
-            text-align: center;
-            text-decoration: none;
-            color: #000000;
-            font-size: 14px;
-        }
-        .navbar a.active {
-            font-weight: bold;
-        }
-        .nav-item.active {
-            color: #68c56b;
-            font-weight: bold;
-        }
-        .nav-item i {
-            font-size: 22px;
-            margin-bottom: 2px;
-        }
-        @media (max-width: 430px) {
-            .expert-container, .bottom-nav {
-                max-width: 100vw;
-            }
-        }
-
-        .bottom-nav {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100vw;
-            max-width: 100%;
+        .main-content {
+            width: 90%;
+            max-width: 100vw;
+            min-width: 0;
+            margin: 0;
             background: #fff;
-            border-top: 0px solid #eee;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 6px 0 2px 0;
-            z-index: 100;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            border-radius: 0;
+            margin-left: 5%;
         }
-        .nav-item {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
             display: flex;
             flex-direction: column;
+            padding-top: 24px;
+            z-index: 1000;
+        }
+        .sidebar-link {
+            display: flex;
             align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
             text-decoration: none;
-            color: #222;
-            font-size: 15px;
-            flex: 1;
+            color: #24292f;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s, color 0.2s;
         }
-        .nav-item.active span {
-            font-weight: bold;
+        .sidebar-link img {
+            width: 24px;
+            height: 24px;
+            margin: 0;
         }
-        .nav-icon {
-            width: 32px;
-            height: 32px;
-            margin-bottom: 2px;
-            display: block;
+        .sidebar-link span {
+            font-size: 16px;
+            font-weight: 500;
         }
-        .nav-item span {
-            font-size: 14px;
-            margin-top: 2px;
-            display: block;
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background: #f6f8fa;
+            color: #0969da;
         }
-        .nav-item.active .nav-icon {
-            filter: brightness(0) saturate(100%) invert(54%) sepia(69%) saturate(355%) hue-rotate(72deg) brightness(93%) contrast(90%);
+        .sidebar-link.active img,
+        .sidebar-link:hover img {
+            filter: none;
         }
-
-        
-.main-content {
-    width: 90%;
-    max-width: 100vw;
-    min-width: 0;
-    margin: 0;
-    background: #fff;
-    min-height: 100vh;
-    padding-bottom: 80px; 
-    border-radius: 0;
-    margin-left: 5%;
-}
-/* Sidebar like GitHub style */
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background: #fff;
-    border-right: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    padding-top: 24px;
-    z-index: 1000;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 20px;
-    text-decoration: none;
-    color: #24292f;
-    font-size: 16px;
-    border-radius: 8px;
-    margin-bottom: 4px;
-    transition: background 0.2s, color 0.2s;
-}
-
-.sidebar-link img {
-    width: 24px;
-    height: 24px;
-    margin: 0;
-}
-
-.sidebar-link span {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.sidebar-link.active,
-.sidebar-link:hover {
-    background: #f6f8fa;
-    color: #0969da;
-}
-
-.sidebar-link.active img,
-.sidebar-link:hover img {
-    filter: none;
-}
-
-body {
-    margin-left: 220px !important;
-}
-
-@media (max-width: 600px) {
-    .sidebar {
-        position: fixed;
-        flex-direction: row;
-        width: 100vw;
-        height: 60px;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        border-right: none;
-        border-top: 1px solid #e0e0e0;
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-    .sidebar-link {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2px;
-        font-size: 12px;
-        padding: 0 8px;
-        margin-bottom: 0;
-    }
-    .sidebar-link span {
-        font-size: 12px;
-    }
-    body {
-        margin-left: 0 !important;
-        margin-bottom: 60px !important;
-    }
-}
+        body {
+            margin-left: 220px !important;
+        }
+        @media (max-width: 600px) {
+            .sidebar {
+                position: fixed;
+                flex-direction: row;
+                width: 100vw;
+                height: 60px;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                border-right: none;
+                border-top: 1px solid #e0e0e0;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+            .sidebar-link {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2px;
+                font-size: 12px;
+                padding: 0 8px;
+                margin-bottom: 0;
+            }
+            .sidebar-link span {
+                font-size: 12px;
+            }
+            body {
+                margin-left: 0 !important;
+                margin-bottom: 60px !important;
+            }
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 30px 20px 20px 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            position: relative;
+        }
     </style>
 </head>
 <body>
-
     <div class="main-content"><br>
         <div class="expert-container">
-        <div class="expert-title">Provided expert services</div>
-        <button class="booked-btn" id="bookConsultBtn">Book consultation</button>
-        <button class="booked-btn">Booked consultation</button>
-        <div class="experts-label">Experts</div>
-        <div class="expert-list">
-            <div class="expert-card">
-                <div class="expert-avatar"></div>
-                <div class="expert-info">
-                    <div class="expert-name">Dr. Hassan</div>
-                    <div class="expert-specialty">Soil & irrigation</div>
-                </div>
-                <button class="chat-btn">Chat now</button>
-            </div>
-            <div class="expert-card">
-                <div class="expert-avatar"></div>
-                <div class="expert-info">
-                    <div class="expert-name">Dr. kimario</div>
-                    <div class="expert-specialty">Soil & irrigation</div>
-                </div>
-                <button class="chat-btn">Chat now</button>
-            </div>
-            <div class="expert-card">
-                <div class="expert-avatar"></div>
-                <div class="expert-info">
-                    <div class="expert-name">Dr. yusuph</div>
-                    <div class="expert-specialty">Soil & irrigation</div>
-                </div>
-                <button class="chat-btn">Chat now</button>
-            </div>
-            <div class="expert-card">
-                <div class="expert-avatar"></div>
-                <div class="expert-info">
-                    <div class="expert-name">Dr. Hassan</div>
-                    <div class="expert-specialty">Soil & irrigation</div>
-                </div>
-                <button class="chat-btn">Chat now</button>
-            </div>
-            <div class="expert-card">
-                <div class="expert-avatar"></div>
-                <div class="expert-info">
-                    <div class="expert-name">Dr. mariam</div>
-                    <div class="expert-specialty">Soil & irrigation</div>
-                </div>
-                <button class="chat-btn">Chat now</button>
+            <div class="expert-title">Provided expert services</div>
+            <button class="booked-btn" id="bookedConsultBtn">Booked consultation</button>
+            <button class="booked-btn" id="bookConsultBtn">Book consultation</button>
+            <div class="experts-label">Experts</div>
+            <div class="expert-list" id="expertList">
+                <!-- Experts will be loaded here -->
+                <div style="text-align:center;color:#888;padding:16px 0;" id="loadingExperts">Loading experts...</div>
             </div>
         </div>
     </div>
-    </div>
-
     <div class="sidebar">
-    <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
-    <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
-    <a href="expert.html" class="sidebar-link active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
-    <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
-    <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
-</div>
+        <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
+    </div>
+    <!-- Modal for error message -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            You are not an expert.
+        </div>
+    </div>
     <script>
-    // Add this script before </body>
     document.addEventListener('DOMContentLoaded', function() {
-        const bookBtn = document.getElementById('bookConsultBtn');
-        if (bookBtn) {
-            bookBtn.addEventListener('click', function() {
-                window.location.href = 'book-consultation.html';
-            });
+        // 1. Auth logic, check role from API
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            window.location.href = "login.html";
+            return;
         }
+        fetch('http://localhost:3000/api/user-role/' + userId)
+            .then(res => res.json())
+            .then(data => {
+                const role = (data.role || "").toLowerCase();
+                const bookedBtn = document.getElementById('bookedConsultBtn');
+                const bookBtn = document.getElementById('bookConsultBtn');
+                const errorModal = document.getElementById('errorModal');
+                if (role === "expert") {
+                    if (bookedBtn) bookedBtn.onclick = () => window.location.href = 'booked-consultation.html';
+                    if (bookBtn) bookBtn.onclick = () => window.location.href = 'book-consultation.html';
+                } else {
+                    if (bookedBtn) bookedBtn.onclick = () => {
+                        errorModal.style.display = 'block';
+                        setTimeout(() => errorModal.style.display = 'none', 2000);
+                    };
+                    if (bookBtn) bookBtn.onclick = () => window.location.href = 'book-consultation.html';
+                }
+            })
+            .catch(err => {
+                alert('Could not verify user role. Please login again.');
+                window.location.href = "login.html";
+            });
+
+        // 2. Load experts from backend and render
+        const expertList = document.getElementById('expertList');
+        fetch('http://localhost:3000/api/experts')
+            .then(res => res.json())
+            .then(data => {
+                expertList.innerHTML = "";
+                if (data.experts && data.experts.length > 0) {
+                    data.experts.forEach(expert => {
+                        // Get initials for avatar
+                        let initials = "";
+                        if (expert.name && expert.name.length) {
+                            const parts = expert.name.split(' ');
+                            initials = parts[0][0] || '';
+                            if (parts.length > 1) initials += parts[1][0];
+                        }
+                        expertList.innerHTML += `
+                            <div class="expert-card">
+                                <div class="expert-avatar">${initials.toUpperCase()}</div>
+                                <div class="expert-info">
+                                    <div class="expert-name">${expert.name || 'Expert'}</div>
+                                    <div class="expert-specialty">${expert.specialization || 'Specialist'}</div>
+                                    <div class="expert-specialty" style="font-size:13px;color:#aaa;">${expert.email || ''} ${expert.phone ? ' | ' + expert.phone : ''}</div>
+                                </div>
+                                <button class="chat-btn" onclick="alert('Chat coming soon!')">Chat now</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    expertList.innerHTML = '<div style="text-align:center;color:#888;padding:16px 0;">No experts found.</div>';
+                }
+            })
+            .catch(err => {
+                expertList.innerHTML = '<div style="text-align:center;color:#c00;padding:16px 0;">Failed to load experts.</div>';
+            });
+        // Prevent closing modal manually
+        var errorModal = document.getElementById('errorModal');
+        window.onclick = function(event) {
+            if (event.target == errorModal) {
+                // do nothing (prevent closing)
+            }
+        };
     });
-</script>
+    </script>
 </body>
 </html>

@@ -167,45 +167,195 @@
     <div class="main-content">
         <div class="container">
             <div class="title"></div>
+            <!-- <div class="user-details" style="margin-bottom: 24px; text-align: center;">
+                <div><b>Full Name:</b> <span id="userFullName"></span></div>
+                <div><b>Email:</b> <span id="userEmail"></span></div>
+                <div><b>Phone:</b> <span id="userPhone"></span></div>
+            </div> -->
             <div class="profile-avatar">
                 <div class="avatar"></div>
-                <div class="profile-name">Yusuph Paul</div>
-                <div class="profile-username">@yusuphpaul</div>
-                <button class="edit-profile-btn">Edit Profile</button>
+                <div class="profile-name" id="profileName"></div>
+                <div class="profile-username" id="profileUsername"></div>
+                <div class="profile-email" id="profileEmail" style="color:#888; font-size:1em; margin-bottom:10px;"></div>
+                <button class="edit-profile-btn">Edit profile</button>
             </div>
             <div class="menu">
                 <div class="menu-item">
                     <a href="#">
-                        <span>My Favourites</span>
+                        <span>My favourites</span>
                         <i><img src="icons/icons8-like-50.png" alt="Favourites Icon"></i>
                     </a>
                 </div>
                 <div class="menu-item">
                     <a href="#">
                         <span>Location</span>
+                        <span id="userLocation" style="margin-left:10px;color:#218838;font-weight:bold;"></span>
                         <i><img src="icons/icons8-location-24.png" alt="Location Icon"></i>
                     </a>
                 </div>
                 <div class="menu-item">
                     <a href="#">
-                        <span>Saved Tips</span>
+                        <span>Saved tips</span>
                         <i><img src="icons/icons8-download-24.png" alt="Saved Tips Icon"></i>
                     </a>
                 </div>
                 <div class="menu-item">
                     <a href="#">
-                        <span>My Role</span>
+                        <span>My role</span>
+                        <span id="userRole" style="margin-left:10px;color:#218838;font-weight:bold;"></span>
                         <i><img src="icons/icons8-user-24.png" alt="Role Icon"></i>
                     </a>
                 </div>
                 <div class="menu-item">
                     <a href="index.html">
-                        <span>Log Out</span>
+                        <span>Log out</span>
                         <i><img src="https://cdn-icons-png.flaticon.com/128/1828/1828490.png" alt="Logout Icon"></i>
                     </a>
                 </div>
             </div>
         </div>
     </div>
+    <div id="editProfileModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); align-items:center; justify-content:center; z-index:2000;">
+        <div style="background:#fff; border-radius:12px; padding:28px 22px 18px 22px; max-width:340px; width:90vw; box-shadow:0 4px 16px rgba(0,0,0,0.13); position:relative;">
+            <button onclick="document.getElementById('editProfileModal').style.display='none'" style="position:absolute;top:8px;right:12px;font-size:1.3em;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <h3 style="margin-top:0;color:#218838;">Edit profile</h3>
+            <form id="editProfileForm">
+                <div style="margin-bottom:10px;">
+                    <label for="editName">Full name:</label>
+                    <input type="text" id="editName" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;" required>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label for="editUsername">Username:</label>
+                    <input type="text" id="editUsername" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;" required>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label for="editAvatar">Avatar URL (optional):</label>
+                    <input type="text" id="editAvatar" style="width:100%;padding:8px;border-radius:6px;border:1px solid #c3e6cb;">
+                </div>
+                <button type="submit" class="edit-profile-btn" style="width:100%;">Save changes</button>
+                <div id="editProfileMsg" style="color:#c00;margin-top:8px;text-align:center;"></div>
+            </form>
+        </div>
+    </div>
+    <script>
+    const editBtn = document.querySelector('.edit-profile-btn');
+    const modal = document.getElementById('editProfileModal');
+    const nameEl = document.querySelector('.profile-name');
+    const usernameEl = document.querySelector('.profile-username');
+    const avatarEl = document.querySelector('.avatar');
+
+    editBtn.onclick = function() {
+        document.getElementById('editName').value = nameEl.textContent;
+        document.getElementById('editUsername').value = usernameEl.textContent.replace('@','');
+        document.getElementById('editAvatar').value = ""; // Optionally prefill if you store avatar
+        document.getElementById('editProfileMsg').textContent = "";
+        modal.style.display = "flex";
+    };
+
+    document.getElementById('editProfileForm').onsubmit = function(e) {
+        e.preventDefault();
+        // In a real app, send to backend via fetch/AJAX
+        nameEl.textContent = document.getElementById('editName').value;
+        usernameEl.textContent = "@" + document.getElementById('editUsername').value;
+        document.getElementById('profileEmail').textContent = document.getElementById('userEmail').textContent;
+        const avatarUrl = document.getElementById('editAvatar').value.trim();
+        if (avatarUrl) avatarEl.style.backgroundImage = `url('${avatarUrl}')`;
+        modal.style.display = "none";
+
+        fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                full_name: document.getElementById('editName').value,
+                username: document.getElementById('editUsername').value,
+                avatar: document.getElementById('editAvatar').value
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('editProfileMsg').textContent = "Profile updated successfully!";
+                document.getElementById('editProfileMsg').style.color = "#28a745";
+            } else {
+                document.getElementById('editProfileMsg').textContent = "Error updating profile. Please try again.";
+                document.getElementById('editProfileMsg').style.color = "#c00";
+            }
+        })
+        .catch(error => {
+            document.getElementById('editProfileMsg').textContent = "Error updating profile. Please try again.";
+            document.getElementById('editProfileMsg').style.color = "#c00";
+        });
+
+        fetch('/api/user/' + userId)
+          .then(res => res.json())
+          .then(user => {
+              document.getElementById('profileName').textContent = user.fullName || '';
+              document.getElementById('profileEmail').textContent = user.email || '';
+              document.getElementById('userRole').textContent = user.role || 'User';
+              // ...other fields
+          });
+
+        fetch('/api/profile/' + userId)
+          .then(res => res.json())
+          .then(profile => {
+              document.getElementById('profileUsername').textContent = profile?.username ? '@' + profile.username : '';
+              document.getElementById('editName').value = profile?.full_name || '';
+              document.getElementById('editUsername').value = profile?.username || '';
+              document.getElementById('editAvatar').value = profile?.avatar || '';
+          });
+    };
+
+    // Example: get userId from localStorage/session
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        fetch('/api/user/' + userId)
+          .then(res => res.json())
+          .then(user => {
+              document.getElementById('profileName').textContent = user.fullName || '';
+              document.getElementById('profileEmail').textContent = user.email || '';
+              document.getElementById('userRole').textContent = user.role || 'User';
+              // ...other fields
+          });
+
+        fetch('/api/profile/' + userId)
+          .then(res => res.json())
+          .then(profile => {
+              document.getElementById('profileUsername').textContent = profile?.username ? '@' + profile.username : '';
+              document.getElementById('editName').value = profile?.full_name || '';
+              document.getElementById('editUsername').value = profile?.username || '';
+              document.getElementById('editAvatar').value = profile?.avatar || '';
+              // Optionally update avatar image
+              if (profile?.avatar) {
+                  document.querySelector('.avatar').style.backgroundImage = `url('${profile.avatar}')`;
+              }
+          });
+    } else {
+        // Redirect to login or show error
+    }
+
+    function setUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                // Replace YOUR_API_KEY with your OpenWeatherMap API key
+                fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('userLocation').textContent = data.name || 'Dar es Salaam';
+                    })
+                    .catch(() => {
+                        document.getElementById('userLocation').textContent = 'Unavailable';
+                    });
+            }, function() {
+                document.getElementById('userLocation').textContent = 'Unavailable';
+            });
+        } else {
+            document.getElementById('userLocation').textContent = 'Unavailable';
+        }
+    }
+    setUserLocation();
+    </script>
 </body>
 </html>

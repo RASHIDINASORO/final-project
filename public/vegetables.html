@@ -209,185 +209,165 @@
                 <img src="images/cabbage.jpeg" alt="Cabbage">
                 <div class="name">Cabbage</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="celery">
                 <img src="images/celery.jpeg" alt="Celery">
                 <div class="name">Celery</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="chills">
                 <img src="images/chills.jpeg" alt="Chills">
                 <div class="name">Chills</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="hoho">
                 <img src="images/hoho.jpeg" alt="Hoho">
                 <div class="name">Hoho</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="lettuce">
                 <img src="images/lettuce.jpeg" alt="Lettuce">
                 <div class="name">Lettuce</div>
                 <div class="price">500 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="african egg">
                 <img src="images/chungu.jpeg" alt="African Egg">
                 <div class="name">African Egg</div>
                 <div class="price">2500 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="mushroom">
                 <img src="images/mushroom.jpeg" alt="Mushroom">
                 <div class="name">Mushroom</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="carrot">
                 <img src="images/czrrot.jpeg" alt="Carrot">
                 <div class="name">Carrot</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="spinach">
                 <img src="images/spinach.jpeg" alt="Spinach">
                 <div class="name">Spinach</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="onion">
                 <img src="images/onion.jpeg" alt="Onion">
                 <div class="name">Onion</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="broccoli">
                 <img src="images/proccoli.jpeg" alt="Broccoli">
                 <div class="name">Broccoli</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="tomato">
                 <img src="images/tomato.jpeg" alt="Tomato">
                 <div class="name">Tomato</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
         </div>
         <div style="height: 60px;"></div>
     </div>
     <script>
+        // Simplified product search
         document.getElementById('searchInput').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
+            const query = this.value.trim().toLowerCase();
             const products = document.querySelectorAll('.product');
-            let hasVisibleProducts = false;
+            let found = false;
 
             products.forEach(product => {
-                const name = product.getAttribute('data-name').toLowerCase();
+                const name = product.querySelector('.name').textContent.toLowerCase();
                 if (name.includes(query)) {
                     product.style.display = 'flex';
-                    hasVisibleProducts = true;
+                    found = true;
                 } else {
                     product.style.display = 'none';
                 }
             });
 
-            const notFoundMessage = document.querySelector('.not-found');
-            if (!hasVisibleProducts) {
+            let notFoundMessage = document.querySelector('.not-found');
+            if (!found) {
                 if (!notFoundMessage) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'not-found';
-                    messageDiv.textContent = 'No products found';
-                    document.getElementById('productGrid').appendChild(messageDiv);
+                    notFoundMessage = document.createElement('div');
+                    notFoundMessage.className = 'not-found';
+                    notFoundMessage.textContent = 'No products found';
+                    document.getElementById('productGrid').appendChild(notFoundMessage);
                 }
-            } else {
-                if (notFoundMessage) {
-                    notFoundMessage.remove();
-                }
+            } else if (notFoundMessage) {
+                notFoundMessage.remove();
             }
         });
-    </script>
-    <script>
-function timeAgo(dateString) {
-    const now = new Date();
-    const date = new Date(dateString);
-    const seconds = Math.floor((now - date) / 1000);
 
-    if (seconds < 60) return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    const days = Math.floor(hours / 24);
-    return `${days} day${days !== 1 ? 's' : ''} ago`;
-}
+        function timeAgo(dateString) {
+            const now = new Date();
+            const date = new Date(dateString);
+            const seconds = Math.floor((now - date) / 1000);
 
-document.addEventListener('DOMContentLoaded', function() {
-    const grid = document.getElementById('productGrid');
-    fetch('/api/products/vegetables')
-        .then(res => res.json())
-        .then(data => {
-            if (data.products && data.products.length > 0) {
-                grid.innerHTML = '';
-                data.products.forEach(p => {
-                    const timeBadge = p.created_at
-                        ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
-                        : '';
-                    const productHTML = `
-                        <div class="product" style="position:relative;">
-                            ${timeBadge}
-                            <img src="${p.image}" alt="${p.name}">
-                            <div class="name">${p.name}</div>
-                            <div class="price">${p.price} Tsh</div>
-                            <a href="#" class="cart-btn">Add to Cart</a>
-                        </div>
-                    `;
-                    grid.insertAdjacentHTML('beforeend', productHTML);
+            if (seconds < 60) return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+            const days = Math.floor(hours / 24);
+            return `${days} day${days !== 1 ? 's' : ''} ago`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const grid = document.getElementById('productGrid');
+            fetch('/api/products/vegetables')
+                .then(res => res.json())
+                .then(data => {
+                    loadedProducts = data.products || [];
+                    if (loadedProducts.length > 0) {
+                        grid.innerHTML = '';
+                        loadedProducts.forEach(p => {
+                            const timeBadge = p.created_at
+                                ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
+                                : '';
+                            const productHTML = `
+                                <div class="product" style="position:relative;" data-id="${p.id}">
+                                    ${timeBadge}
+                                    <img src="${p.image}" alt="${p.name}">
+                                    <div class="name">${p.name}</div>
+                                    <div class="price">${p.price} Tsh</div>
+                                    <a href="#" class="cart-btn">Get</a>
+                                </div>
+                            `;
+                            grid.insertAdjacentHTML('beforeend', productHTML);
+                        });
+                    }
                 });
-            }
         });
-});
 
-const style = document.createElement('style');
-style.textContent = `
-.time-badge {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: rgba(30,30,30,0.85);
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-`;
-document.head.appendChild(style);
-    </script>
-    <script>
-// Modal for Add to Cart action
-function showCartModal(productName) {
-    let modal = document.getElementById('cartModal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'cartModal';
-        modal.innerHTML = `
-            <div class="cart-modal-content">
-                <button class="cart-modal-close" onclick="document.getElementById('cartModal').style.display='none'">&times;</button>
-                <h3>Seller Information</h3>
-                <div id="cartInfo"></div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        // Modal styles
-        const style = document.createElement('style');
-        style.textContent = `
+        // Modal for Add to Cart action
+        function showCartModal(productName, phone) {
+            let modal = document.getElementById('cartModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'cartModal';
+                modal.innerHTML = `
+                    <div class="cart-modal-content">
+                        <button class="cart-modal-close" onclick="document.getElementById('cartModal').style.display='none'">&times;</button>
+                        <h3>Seller Information</h3>
+                        <div id="cartInfo"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                // Modal styles
+                const style = document.createElement('style');
+                style.textContent = `
 #cartModal {
     position: fixed; z-index: 3000; left: 0; top: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center;
@@ -410,30 +390,35 @@ function showCartModal(productName) {
 .seller-value {
     color: #0969da; font-weight: 500;
 }
-        `;
-        document.head.appendChild(style);
-    }
-    document.getElementById('cartInfo').innerHTML = `
-        <div><span class="seller-label">Name:</span> <span class="seller-value">Unknown</span></div>
-        <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">Not provided</span></div>
-    `;
-    modal.style.display = 'flex';
-    // Close modal on outside click
-    modal.onclick = function(e) {
-        if (e.target === modal) modal.style.display = 'none';
-    };
-}
+                `;
+                document.head.appendChild(style);
+            }
+            document.getElementById('cartInfo').innerHTML = `
+                <div><span class="seller-label">Name:</span> <span class="seller-value">${productName || 'Unknown'}</span></div>
+                <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">${phone || 'Not provided'}</span></div>
+            `;
+            modal.style.display = 'flex';
+            // Close modal on outside click
+            modal.onclick = function(e) {
+                if (e.target === modal) modal.style.display = 'none';
+            };
+        }
 
-// Attach to dynamically loaded products
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('cart-btn')) {
-        e.preventDefault();
-        // Find product name
-        let productDiv = e.target.closest('.product');
-        let name = productDiv ? productDiv.querySelector('.name').textContent : 'Product';
-        showCartModal(name);
-    }
-});
+        // Attach to dynamically loaded products
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('cart-btn')) {
+                e.preventDefault();
+                // Find product element and its id
+                const productDiv = e.target.closest('.product');
+                const productId = productDiv ? productDiv.getAttribute('data-id') : null;
+                const product = loadedProducts.find(p => p.id == productId);
+                // Show modal with product details
+                showCartModal(product ? product.name : null, product ? product.seller_phone : null);
+            }
+        });
+    </script>
+    <script>
+let loadedProducts = [];
 </script>
 </body>
 </html>

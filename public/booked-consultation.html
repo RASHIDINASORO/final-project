@@ -134,41 +134,62 @@
 <body>
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <a href="home.html" class="sidebar-link"><img src="icons/download.webp" alt="Home"><span>Home</span></a>
-        <a href="market.html" class="sidebar-link"><img src="icons/icons8-cart-48.png" alt="Market"><span>Market</span></a>
-        <a href="expert.html" class="sidebar-link"><img src="icons/icons8-expert-50.png" alt="Expert"><span>Expert Service</span></a>
-        <a href="discussion.html" class="sidebar-link"><img src="icons/icons8-community-50.png" alt="Community"><span>Community</span></a>
-        <a href="profile.html" class="sidebar-link"><img src="icons/icons8-customer-48.png" alt="Profile"><span>Profile</span></a>
+        <a href="home.html" class="sidebar-link"><img src="https://th.bing.com/th?q=Home+Icon&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&pid=InlineBlock&rm=3&mkt=en-WW&cc=TZ&setlang=en&adlt=moderate&t=1&mw=247" alt=""><span>Home</span></a>
+        <a href="market.html" class="sidebar-link"><img src="https://th.bing.com/th/id/OIP.JdNXjqqetFQlgBRzx02g1gHaE8?pid=ImgDet&w=192&h=128&c=7&cb=idpwebp2&o=7&rm=3" alt=""><span>Market</span></a>
+        <a href="expert.html" class="sidebar-link active"><img src="https://th.bing.com/th/id/OIP.6c-EtQ8EGVJMTmxD0nSlKwHaHa?w=175&h=180&c=7&r=0&o=7&pid=1.7&rm=3" alt=""><span>Expert Service</span></a>
+        <a href="discussion.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/1500/1500455.png" alt=""><span>Community</span></a>
+        <a href="profile.html" class="sidebar-link"><img src="https://cdn-icons-png.flaticon.com/128/4140/4140048.png" alt=""><span>Profile</span></a>
     </div>
     <div class="main-content">
         <div class="booked-container">
             <div class="booked-header">
-                <span class="back-arrow" onclick="window.history.back()">&#8592;</span>
+                <span class="back-arrow" onclick="window.history.back()"></span>
                 Booked consultation
             </div>
-            <div class="consult-list">
-                <div class="consult-card">
-                    <div class="consult-avatar"></div>
-                    <div class="consult-name">Ally juma</div>
-                    <button class="approve-btn">Approve</button>
-                </div>
-                <div class="consult-card">
-                    <div class="consult-avatar"></div>
-                    <div class="consult-name">joel</div>
-                    <button class="approve-btn">Approve</button>
-                </div>
-                <div class="consult-card">
-                    <div class="consult-avatar"></div>
-                    <div class="consult-name">yusuphu</div>
-                    <button class="approve-btn">Approve</button>
-                </div>
-                <div class="consult-card">
-                    <div class="consult-avatar"></div>
-                    <div class="consult-name">kendrick</div>
-                    <button class="approve-btn">Approve</button>
-                </div>
+            <div class="consult-list" id="consultList">
+                <div style="text-align:center;color:#888;padding:16px 0;" id="loadingConsults">Loading bookings...</div>
             </div>
         </div>
     </div>
+    <script>
+    // This assumes you store the logged-in expert's userId in localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        const consultList = document.getElementById('consultList');
+        const userId = localStorage.getItem('userId'); // the expert's user ID
+        if (!userId) {
+            consultList.innerHTML = '<div style="color:#c00;padding:16px 0;text-align:center;">Please log in as an expert to view bookings.</div>';
+            return;
+        }
+        // Fetch bookings for this expert
+        fetch('http://localhost:3000/api/bookings?expertId=' + encodeURIComponent(userId))
+            .then(res => res.json())
+            .then(data => {
+                consultList.innerHTML = "";
+                if (data.bookings && data.bookings.length > 0) {
+                    data.bookings.forEach(booking => {
+                        let initials = "";
+                        if (booking.user_name) {
+                            const parts = booking.user_name.trim().split(' ');
+                            initials = parts[0][0] || '';
+                            if (parts.length > 1) initials += parts[1][0];
+                        }
+                        const card = document.createElement('div');
+                        card.className = "consult-card";
+                        card.innerHTML = `
+                            <div class="consult-avatar"></div>
+                            <div class="consult-name">${booking.user_name || 'User'}</div>
+                            <button class="approve-btn" onclick="alert('Approved!');">Approve</button>
+                        `;
+                        consultList.appendChild(card);
+                    });
+                } else {
+                    consultList.innerHTML = '<div style="text-align:center;color:#888;padding:16px 0;">No bookings found.</div>';
+                }
+            })
+            .catch(err => {
+                consultList.innerHTML = '<div style="color:#c00;padding:16px 0;text-align:center;">Failed to load bookings.</div>';
+            });
+    });
+    </script>
 </body>
 </html>

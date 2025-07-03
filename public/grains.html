@@ -146,6 +146,20 @@
             font-size: 1.2em;
             padding: 32px 0;
         }
+        .time-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #222;      /* Black background for consistency */
+            color: #fff;
+            font-size: 0.93em;
+            border-radius: 8px;
+            padding: 2px 10px 2px 7px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+        }
         @media (max-width: 700px) {
             .sidebar {
                 display: none;
@@ -196,25 +210,25 @@
                 <img src="images/beans.jpeg" alt="Beans">
                 <div class="name">Beans</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="kunde">
                 <img src="images/kunde.jpeg" alt="Kunde">
                 <div class="name">Kunde</div>
                 <div class="price">2000 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="millet">
                 <img src="images/millet.jpeg" alt="Millet">
                 <div class="name">Millet</div>
                 <div class="price">1900 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="rice">
                 <img src="images/rice.jpeg" alt="Rice">
                 <div class="name">Rice</div>
                 <div class="price">3200 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
         </div>
         <div id="notFound" class="not-found" style="display:none;">Product does not exist</div>
@@ -248,6 +262,35 @@
             }
         });
 
+        // Simplified product search
+        document.getElementById('searchInput').addEventListener('input', function() {
+    const query = this.value.trim().toLowerCase();
+    const products = document.querySelectorAll('.product');
+    let found = false;
+
+    products.forEach(product => {
+        const name = product.querySelector('.name').textContent.toLowerCase();
+        if (name.includes(query)) {
+            product.style.display = '';
+            found = true;
+        } else {
+            product.style.display = 'none';
+        }
+    });
+
+    let notFoundMessage = document.querySelector('.not-found');
+    if (!found && query !== '') {
+        if (!notFoundMessage) {
+            notFoundMessage = document.createElement('div');
+            notFoundMessage.className = 'not-found';
+            notFoundMessage.textContent = 'No products found';
+            document.getElementById('productGrid').appendChild(notFoundMessage);
+        }
+    } else if (notFoundMessage) {
+        notFoundMessage.remove();
+    }
+});
+
         // Helper to get "time ago" string (minimum: seconds)
         function timeAgo(dateString) {
             const now = new Date();
@@ -263,24 +306,27 @@
             return `${days} day${days !== 1 ? 's' : ''} ago`;
         }
 
+        let loadedProducts = [];
+
         document.addEventListener('DOMContentLoaded', function() {
             const grid = document.getElementById('productGrid');
             fetch('/api/products/grains')
                 .then(res => res.json())
                 .then(data => {
-                    if (data.products && data.products.length > 0) {
+                    loadedProducts = data.products || [];
+                    if (loadedProducts.length > 0) {
                         grid.innerHTML = '';
-                        data.products.forEach(p => {
+                        loadedProducts.forEach(p => {
                             const timeBadge = p.created_at
                                 ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
                                 : '';
                             const productHTML = `
-                                <div class="product" style="position:relative;">
+                                <div class="product" style="position:relative;" data-id="${p.id}">
                                     ${timeBadge}
                                     <img src="${p.image}" alt="${p.name}">
                                     <div class="name">${p.name}</div>
                                     <div class="price">${p.price} Tsh</div>
-                                    <a href="#" class="cart-btn">Add to Cart</a>
+                                    <a href="#" class="cart-btn">Get</a>
                                 </div>
                             `;
                             grid.insertAdjacentHTML('beforeend', productHTML);
@@ -289,33 +335,8 @@
                 });
         });
 
-        // Add styles for the time badge
-        const style = document.createElement('style');
-        style.textContent = `
-        .time-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(30,30,30,0.85);
-            color: #fff;
-            font-size: 0.98em;
-            font-weight: 600;
-            border-radius: 8px;
-            padding: 2px 10px 2px 7px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            z-index: 2;
-        }
-        .time-badge span {
-            font-size: 1em;
-            margin-right: 2px;
-        }
-        `;
-        document.head.appendChild(style);
-
-        // Modal for Add to Cart action (market.html style)
-        function showCartModal(productName) {
+        // Modal for Get action
+        function showCartModal(productName, phone) {
             let modal = document.getElementById('cartModal');
             if (!modal) {
                 modal = document.createElement('div');
@@ -357,8 +378,8 @@
                 document.head.appendChild(style);
             }
             document.getElementById('cartInfo').innerHTML = `
-                <div><span class="seller-label">Name:</span> <span class="seller-value">Unknown</span></div>
-                <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">Not provided</span></div>
+                <div><span class="seller-label">Name:</span> <span class="seller-value">${productName || 'Unknown'}</span></div>
+                <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">${phone || 'Not provided'}</span></div>
             `;
             modal.style.display = 'flex';
             // Close modal on outside click
@@ -371,10 +392,11 @@
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('cart-btn')) {
                 e.preventDefault();
-                // Find product name
-                let productDiv = e.target.closest('.product');
-                let name = productDiv ? productDiv.querySelector('.name').textContent : 'Product';
-                showCartModal(name);
+                // Find product element and its id
+                const productDiv = e.target.closest('.product');
+                const productId = productDiv ? productDiv.getAttribute('data-id') : null;
+                const product = loadedProducts.find(p => p.id == productId);
+                showCartModal(product ? product.name : null, product ? product.phone : null);
             }
         });
     </script>

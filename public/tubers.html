@@ -196,43 +196,43 @@
                 <img src="images/yamms.jpeg" alt="Yamms">
                 <div class="name">Yamms</div>
                 <div class="price">1400 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="cassava">
                 <img src="images/cassava.jpeg" alt="Cassava">
                 <div class="name">Cassava</div>
                 <div class="price">500 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="irish">
                 <img src="images/irish.jpeg" alt="Irish">
                 <div class="name">Irish</div>
                 <div class="price">2000 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="potato">
                 <img src="images/potato.jpeg" alt="Potato">
                 <div class="name">Potato</div>
                 <div class="price">2000 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="yam">
                 <img src="images/yam.jpeg" alt="Yam">
                 <div class="name">Yam</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="yamms">
                 <img src="images/yamms.jpeg" alt="Yamms">
                 <div class="name">Yamms</div>
                 <div class="price">2950 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="carrot">
                 <img src="images/czrrot.jpeg" alt="Carrot">
                 <div class="name">Carrot</div>
                 <div class="price">500 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
         </div>
         <div id="notFound" class="not-found" style="display:none;">Product does not exist</div>
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="${p.image}" alt="${p.name}">
                             <div class="name">${p.name}</div>
                             <div class="price">${p.price} Tsh</div>
-                            <a href="#" class="cart-btn">Add to Cart</a>
+                            <a href="#" class="cart-btn">Get</a>
                         </div>
                     `;
                     grid.insertAdjacentHTML('beforeend', productHTML);
@@ -336,7 +336,7 @@ style.textContent = `
 document.head.appendChild(style);
 </script>
 <script>
-// Modal for Add to Cart action (same as market.html)
+// Modal for Add to Cart action 
 function showCartModal(productName, phone) {
     let modal = document.getElementById('cartModal');
     if (!modal) {
@@ -399,6 +399,37 @@ document.addEventListener('click', function(e) {
         const product = loadedProducts.find(p => p.id == productId);
         // Show modal with product details
         showCartModal(product ? product.name : null, product ? product.phone : null);
+    }
+});
+</script>
+<script>
+// Simplified product search
+document.getElementById('searchInput').addEventListener('input', function() {
+    const query = this.value.trim().toLowerCase();
+    const products = document.querySelectorAll('.product');
+    let found = false;
+
+    products.forEach(product => {
+        const name = product.querySelector('.name').textContent.toLowerCase();
+        if (name.includes(query)) {
+            product.style.display = '';
+            found = true;
+        } else {
+            product.style.display = 'none';
+        }
+    });
+
+    let notFoundMessage = document.querySelector('.not-found');
+    if (!found && query !== '') {
+        if (!notFoundMessage) {
+            notFoundMessage = document.createElement('div');
+            notFoundMessage.className = 'not-found';
+            notFoundMessage.textContent = 'No products found';
+            productGrid.appendChild(notFoundMessage);
+        }
+        notFoundMessage.style.display = 'block';
+    } else if (notFoundMessage) {
+        notFoundMessage.style.display = 'none';
     }
 });
 </script>

@@ -13,9 +13,6 @@
         <div class="title">Sign up</div>
         <div class="subtitle">Create an account</div>
 
-        <!-- Success message container -->
-        <div id="message" style="color: green; text-align: center; margin-bottom: 10px;"></div>
-
         <form id="signupForm">
             <div class="form-group">
                 <label for="">Fullname</label>
@@ -40,6 +37,76 @@
         </div>
     </div>
 
+    <!-- Error Popup Modal -->
+    <div id="errorPopup" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); align-items:center; justify-content:center; z-index:3000;">
+        <div style="background:#fff; border-radius:12px; padding:24px 30px; max-width:340px; width:90vw; box-shadow:0 4px 16px rgba(0,0,0,0.13); text-align:center; position:relative;">
+            <button onclick="document.getElementById('errorPopup').style.display='none'" style="position:absolute;top:8px;right:12px;font-size:1.3em;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <div id="errorPopupMsg" style="font-size:1.1em;"></div>
+        </div>
+    </div>
+
     <script src="assets/main.js"></script>
+    <script>
+        function showErrorPopup(message, isSuccess = false) {
+            var msgDiv = document.getElementById('errorPopupMsg');
+            msgDiv.textContent = message;
+            msgDiv.style.color = isSuccess ? '#218838' : '#c00'; // green for success, red for error
+            document.getElementById('errorPopup').style.display = 'flex';
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Full name validation
+            if (!fullName) {
+                showErrorPopup('Full name is required.');
+                return;
+            }
+
+            // Phone validation: must start with 0 and be exactly 10 digits
+            if (!/^0\d{9}$/.test(phone)) {
+                showErrorPopup('Phone number must start with 0 and be exactly 10 digits.');
+                return;
+            }
+
+            // Email validation: must be a valid email
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showErrorPopup('Please enter a valid email address.');
+                return;
+            }
+
+            // Password validation: at least 6 characters
+            if (password.length < 6) {
+                showErrorPopup('Password must be at least 6 characters.');
+                return;
+            }
+
+            // If all validations pass, submit the form via fetch
+            fetch('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName, phone, email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message && data.message.toLowerCase().includes('success')) {
+                    showErrorPopup('Signup successful prepare login', true);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    showErrorPopup(data.message || 'Signup failed. Please try again.');
+                }
+            })
+            .catch(() => {
+                showErrorPopup('Signup failed. Please try again.');
+            });
+        });
+    </script>
 </body>
 </html>

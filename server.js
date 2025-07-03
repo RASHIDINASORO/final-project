@@ -30,6 +30,17 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
 
 
         db.serialize(() => {
+            db.run(` 
+                CREATE TABLE IF NOT EXISTS bookings (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 user_id INTEGER,
+                 expert_id INTEGER,
+                 status TEXT DEFAULT 'pending',
+                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                 FOREIGN KEY (user_id) REFERENCES users(id),
+                 FOREIGN KEY (expert_id) REFERENCES users(id)
+                  )
+              `);
             db.run(`
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,6 +68,7 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     image TEXT
                 )
             `);
+            
             db.run(`
                 CREATE TABLE IF NOT EXISTS products (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,6 +76,7 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     price TEXT NOT NULL,
                     image TEXT NOT NULL,
                     category TEXT NOT NULL,
+                    phone TEXT,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             `);
@@ -88,6 +101,16 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             `);
+            db.run(`
+                CREATE TABLE IF NOT EXISTS profiles (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER UNIQUE,
+                    full_name TEXT,
+                    username TEXT,
+                    avatar TEXT,
+                    FOREIGN KEY (user_id) REFERENCES users(id)
+                )
+            `);
         });
     }
 });
@@ -96,13 +119,31 @@ const db = new sqlite3.Database('./kilimo.db', (err) => {
 app.post('/signup', async (req, res) => {
     const { fullName, phone, email, password } = req.body;
 
+    // 1. Check for missing fields
     if (!fullName || !phone || !email || !password) {
         return res.status(400).json({ message: 'Please fill in all fields.' });
     }
 
+    // 2. Phone validation: must start with 0 and be exactly 10 digits
+    if (!/^0\d{9}$/.test(phone)) {
+        return res.status(400).json({ message: 'Phone number must start with 0 and be exactly 10 digits.' });
+    }
+
+    // 3. Password validation: at least 6 characters
+    if (password.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+    }
+
+    // 4. Email validation: must be a valid email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ message: 'Please enter a valid email address.' });
+    }
+
+    // 5. Normalize and hash
     const normalizedEmail = email.trim().toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 6. Try to insert user
     const insertQuery = `
         INSERT INTO users (fullName, phone, email, password)
         VALUES (?, ?, ?, ?)
@@ -110,11 +151,17 @@ app.post('/signup', async (req, res) => {
 
     db.run(insertQuery, [fullName, phone, normalizedEmail, hashedPassword], function (err) {
         if (err) {
+            // Handle duplicate email or other DB errors
             if (err.message.includes('UNIQUE constraint')) {
                 return res.status(409).json({ message: 'Email is already registered.' });
             }
             return res.status(500).json({ message: 'Signup error: ' + err.message });
         }
+        // Only after successful user insert, insert profile
+        db.run(
+            'INSERT INTO profiles (user_id, full_name) VALUES (?, ?)',
+            [this.lastID, fullName]
+        );
         res.status(201).json({ message: 'Signup successful!' });
     });
 });
@@ -147,6 +194,7 @@ app.post('/index', (req, res) => {
         res.status(200).json({ 
             message: 'Login successful!',
             user: {
+                id: user.id, // <-- add this line
                 username: user.username,
                 avatar: user.avatar // or user.image, depending on your DB column
             }
@@ -313,6 +361,29 @@ app.post('/api/products', (req, res) => {
     );
 });
 
+// Endpoint to get bookings for a specific expert
+app.get('/api/bookings', (req, res) => {
+    const expertId = req.query.expertId;
+    if (!expertId) {
+        return res.status(400).json({ message: 'Expert ID is required.' });
+    }
+    db.all(
+        `SELECT bookings.id, bookings.status, bookings.created_at, u.fullName as user_name
+         FROM bookings
+         LEFT JOIN users u ON bookings.user_id = u.id
+         WHERE bookings.expert_id = ? 
+         ORDER BY bookings.created_at DESC
+        `, [expertId],
+        (err, rows) => {
+            if (err) {
+                console.error("BOOKINGS DB ERROR:", err);
+                return res.status(500).json({ message: 'Error fetching bookings.' });
+            }
+            res.json({ bookings: rows });
+        }
+    );
+});
+
 // Get products by category
 app.get('/api/products/:category', (req, res) => {
     const category = req.params.category;
@@ -349,11 +420,14 @@ app.put('/api/products/:id', (req, res) => {
     );
 });
 
-// Delete product
+// Delete product by ID (admin only)
 app.delete('/api/products/:id', (req, res) => {
-    db.run('DELETE FROM products WHERE id=?', [req.params.id], function (err) {
+    // You should check admin authentication here in production!
+    const productId = req.params.id;
+    db.run('DELETE FROM products WHERE id = ?', [productId], function(err) {
         if (err) return res.status(500).json({ message: 'Error deleting product.' });
-        res.json({ message: 'Product deleted successfully!' });
+        if (this.changes === 0) return res.status(404).json({ message: 'Product not found.' });
+        res.json({ message: 'Product deleted successfully.' });
     });
 });
 
@@ -520,6 +594,87 @@ app.delete('/api/market_prices/:id', (req, res) => {
     });
 });
 
+// Get profile by user_id
+app.get('/api/profile/:user_id', (req, res) => {
+    db.get('SELECT * FROM profiles WHERE user_id = ?', [req.params.user_id], (err, row) => {
+        if (err) return res.status(500).json({ message: 'Error fetching profile.' });
+        res.json(row);
+    });
+});
+
+// Update or insert profile
+app.post('/api/profile', (req, res) => {
+    const { user_id, full_name, username, avatar } = req.body;
+    db.run(
+        `INSERT INTO profiles (user_id, full_name, username, avatar)
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(user_id) DO UPDATE SET
+            full_name=excluded.full_name,
+            username=excluded.username,
+            avatar=excluded.avatar`,
+        [user_id, full_name, username, avatar],
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Error saving profile.' });
+            res.json({ message: 'Profile saved successfully!' });
+        }
+    );
+});
+
+// Get user by ID
+app.get('/api/user/:id', (req, res) => {
+    db.get('SELECT fullName, email, phone, role FROM users WHERE id = ?', [req.params.id], (err, row) => {
+        if (err) return res.status(500).json({ message: 'Error fetching user.' });
+        res.json(row);
+    });
+});
+
+// Admin login route
+app.post('/admin-login', (req, res) => {
+    const { email, password } = req.body;
+    db.get('SELECT * FROM users WHERE email = ? AND role = "admin"', [email], async (err, user) => {
+        if (err) return res.status(500).json({ message: 'Login error.' });
+        if (!user) return res.status(401).json({ message: 'Invalid admin credentials.' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ message: 'Invalid admin credentials.' });
+        res.json({ success: true, user: { id: user.id, role: user.role } });
+    });
+});
+
+// Get top 10 recent market prices for trending crops
+app.get('/api/market_prices/trending', (req, res) => {
+    db.all(
+        `SELECT name, image FROM market_prices ORDER BY id DESC LIMIT 10`,
+        [],
+        (err, rows) => {
+            if (err) return res.status(500).json({ message: 'Error fetching trending crops.' });
+            res.json({ crops: rows });
+        }
+    );
+});
+// Get user role by user ID (for authentication in frontend)
+app.get('/api/user-role/:id', (req, res) => {
+    const userId = req.params.id;
+    db.get('SELECT role FROM users WHERE id = ?', [userId], (err, row) => {
+        if (err) return res.status(500).json({ message: 'Error fetching user role.' });
+        if (!row) return res.status(404).json({ message: 'User not found.' });
+        res.json({ role: row.role });
+    });
+});
+
+// Get all experts
+app.get('/api/experts', (req, res) => {
+    db.all(
+        `SELECT fullName as name, specialization, phone, email FROM users WHERE role = 'expert'`,
+        [],
+        (err, rows) => {
+            if (err) {
+                console.error("EXPERTS DB ERROR:", err); // <--- Add this line
+                return res.status(500).json({ message: 'Error fetching experts.' });
+            }
+            res.json({ experts: rows });
+        }
+    );
+});
 // Start server
 const PORT = 3000;
 app.listen(PORT, () => {

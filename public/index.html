@@ -27,11 +27,33 @@
         </form>
         <div class="signup">
             Don't have an account yet?   <a href="signup.html">Sign up</a><br>
-            <a href="admin.html">Admin</a>
+            <a href="admin-login.html">Admin</a>
 
         </div>
     </div>
     
     <script src="assets/main.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Example login fetch
+            fetch('/index', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.user && data.user.id) {
+                    localStorage.setItem('userId', data.user.id);
+                    // ...redirect or load profile
+                }
+            });
+        });
+    </script>
 </body>
 </html>

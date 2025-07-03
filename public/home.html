@@ -83,11 +83,20 @@
         .crops-section h2 {
             margin-top: 0;
         }
+        .crops-belt-wrapper {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+            height: 110px;
+        }
         .crops-icons {
             display: flex;
             gap: 24px;
-            overflow-x: auto;
-            padding-bottom: 8px;
+            align-items: center;
+            height: 110px;
+            /* Remove overflow-x: auto; */
+            will-change: transform;
+            /* Animation will be set by JS */
         }
         .crop {
             display: flex;
@@ -198,57 +207,15 @@
         </div>
         
         <div class="crops-section section">
-        
-            <h2>Trending Crops in the market</h2>
-            <div class="crops-icons">
-                <div class="crop">
-                    <img src="images/beans.jpeg" alt="Beans">
-                    <span>Beans</span>
-                </div>
-                <div class="crop">
-                    <img src="images/cassava.jpeg" alt="Cassava">
-                    <span>Cassava</span>
-                </div>
-                <div class="crop">
-                    <img src="images/tomato.jpeg" alt="Tomato">
-                    <span>Tomato</span>
-                </div>
-                <div class="crop">
-                    <img src="images/banana.jpg" alt="Banana">
-                    <span>Banana</span>
-                </div>
-                <div class="crop">
-                    <img src="images/cabbage.jpeg" alt="Cabbage">
-                    <span>Cabbage</span>
-                </div>
-                <div class="crop">
-                    <img src="images/hoho.jpeg" alt="Hoho">
-                    <span>Hoho</span>
-                </div>
-                <div class="crop">
-                    <img src="images/mushroom.jpeg" alt="Mushroom">
-                    <span>Mushroom</span>
-                </div>
-                <div class="crop">
-                    <img src="images/onion.jpeg" alt="Onion">
-                    <span>Onion</span>
-                </div>
-                <div class="crop">
-                    <img src="images/oranges.jpeg" alt="Orange">
-                    <span>Orange</span>
-                </div>
-                <div class="crop">
-                    <img src="images/irish.jpeg" alt="Irish">
-                    <span>Irish</span>
-                </div>
-                <div class="crop">
-                    <img src="images/cucumber.jpeg" alt="Cucumber">
-                    <span>Cucumber</span>
+            <h2>Trending crops in the market</h2>
+            <div class="crops-belt-wrapper">
+                <div class="crops-icons" id="trendingCrops">
+                    <!-- Trending crops will be loaded here by JS -->
                 </div>
             </div>
         </div>
         <div class="market-prices section">
-            <h2>Market Prices</h2>
+            <h2>National market prices</h2>
             <div id="marketPricesList"></div>
         </div>
         
@@ -335,6 +302,25 @@
         citySelect.addEventListener('change', function() {
             fetchWeather(this.value);
         });
+
+        // Trending crops: top 10 crops uploaded by admin and seen at market prices
+        fetch('/api/market_prices/trending')
+            .then(res => res.json())
+            .then(data => {
+                const cropsContainer = document.getElementById('trendingCrops');
+                cropsContainer.innerHTML = '';
+                (data.crops || []).forEach(crop => {
+                    cropsContainer.innerHTML += `
+                        <div class="crop">
+                            <img src="${crop.image || 'images/default.jpg'}" alt="${crop.name}">
+                            <span>${crop.name}</span>
+                        </div>
+                    `;
+                });
+
+                // Start belt animation after crops are loaded
+                startCropsBelt();
+            });
     });
 
     async function loadMarketPricesHome() {
@@ -356,6 +342,35 @@
     }
 
     loadMarketPricesHome();
+
+    function startCropsBelt() {
+        const belt = document.getElementById('trendingCrops');
+        if (!belt) return;
+        let pos = 0;
+        let speed = 1; // pixels per frame
+        let wrapper = belt.parentElement;
+        let wrapperWidth = wrapper.offsetWidth;
+
+        // Duplicate crops for seamless infinite loop
+        if (belt.childElementCount > 0) {
+            // Remove previous clones if any
+            while (belt.childElementCount > 20) {
+                belt.removeChild(belt.lastChild);
+            }
+            belt.innerHTML += belt.innerHTML;
+        }
+        let beltWidth = belt.scrollWidth;
+
+        function animate() {
+            pos -= speed;
+            if (Math.abs(pos) >= beltWidth / 2) {
+                pos = 0;
+            }
+            belt.style.transform = `translateX(${pos}px)`;
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
     </script>
 </body>
 </html>

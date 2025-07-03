@@ -196,25 +196,25 @@
                 <img src="images/pineapple.jpeg" alt="pineapple">
                 <div class="name">Pineapple</div>
                 <div class="price">2000 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="banana">
                 <img src="images/banana.jpg" alt="Banana">
                 <div class="name">Banana</div>
                 <div class="price">350 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="mango">
                 <img src="images/mango.jpeg" alt="mango">
                 <div class="name">Mango</div>
                 <div class="price">1000 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
             <div class="product" data-name="oranges">
                 <img src="images/oranges.jpeg" alt="oranges">
                 <div class="name">Oranges</div>
                 <div class="price">250 Tsh</div>
-                <a href="#" class="cart-btn">Add to Cart</a>
+                <a href="#" class="cart-btn">Get</a>
             </div>
         </div>
         <div id="notFound" class="not-found" style="display:none;">Product does not exist</div>
@@ -323,21 +323,28 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('/api/products/fruits')
         .then(res => res.json())
         .then(data => {
-            if (data.products && data.products.length > 0) {
+            loadedProducts = data.products || [];
+            if (loadedProducts.length > 0) {
                 grid.innerHTML = '';
-                data.products.forEach(p => {
+                loadedProducts.forEach(p => {
                     const timeBadge = p.created_at
                         ? `<div class="time-badge"><span>&#128337;</span> ${timeAgo(p.created_at)}</div>`
                         : '';
                     const sellerName = p.seller_name ? p.seller_name : "Unknown";
                     const sellerPhone = p.seller_phone ? p.seller_phone : "Not provided";
+                    // Check if user is admin
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    const isAdmin = user && user.role === 'admin';
+                    const buttonHTML = isAdmin
+                        ? `<button class="delete-btn" style="background:#c00; color:#fff; margin-top:8px;">Delete</button>`
+                        : `<button class="cart-btn">Get</button>`;
                     const productHTML = `
-                        <div class="product" style="position:relative;">
+                        <div class="product" style="position:relative;" data-id="${p.id}">
                             ${timeBadge}
                             <img src="${p.image}" alt="${p.name}">
                             <div class="name">${p.name}</div>
                             <div class="price">${p.price} Tsh</div>
-                            <button class="cart-btn" onclick="showSellerModal('${sellerName.replace(/'/g,"&#39;")}', '${sellerPhone.replace(/'/g,"&#39;")}')">Add to Cart</button>
+                            ${buttonHTML}
                         </div>
                     `;
                     grid.insertAdjacentHTML('beforeend', productHTML);
@@ -370,6 +377,97 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
+// Show delete buttons if admin
+const user = JSON.parse(localStorage.getItem('user'));
+if (user && user.role === 'admin') {
+    document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'block');
+}
+
+// Delete product handler
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('delete-btn')) {
+        const productDiv = e.target.closest('.product');
+        const productId = productDiv.getAttribute('data-id');
+        if (confirm('Are you sure you want to delete this product?')) {
+            fetch(`/api/products/${productId}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.message && data.message.toLowerCase().includes('success')) {
+                        productDiv.remove();
+                    } else {
+                        alert(data.message || 'Failed to delete product.');
+                    }
+                });
+        }
+    }
+});
+</script>
+<script>
+function showCartModal(productName, phone) {
+    let modal = document.getElementById('cartModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cartModal';
+        modal.innerHTML = `
+            <div class="cart-modal-content">
+                <button class="cart-modal-close" onclick="document.getElementById('cartModal').style.display='none'">&times;</button>
+                <h3>Seller Information</h3>
+                <div id="cartInfo"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        // Modal styles
+        const style = document.createElement('style');
+        style.textContent = `
+#cartModal {
+    position: fixed; z-index: 3000; left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center;
+}
+.cart-modal-content {
+    background: #fff; border-radius: 12px; padding: 28px 22px 18px 22px;
+    max-width: 320px; width: 90vw; box-shadow: 0 4px 16px rgba(0,0,0,0.13); position: relative;
+    text-align: center;
+}
+.cart-modal-close {
+    position: absolute; top: 8px; right: 12px; font-size: 1.3em; color: #888;
+    background: none; border: none; cursor: pointer;
+}
+.cart-modal-content h3 {
+    margin-top: 0; color: #218838;
+}
+.seller-label {
+    font-weight: bold; color: #444; margin-right: 4px;
+}
+.seller-value {
+    color: #0969da; font-weight: 500;
+}
+        `;
+        document.head.appendChild(style);
+    }
+    document.getElementById('cartInfo').innerHTML = `
+        <div><span class="seller-label">Name:</span> <span class="seller-value">${productName || 'Unknown'}</span></div>
+        <div style="margin-top:8px;"><span class="seller-label">Phone:</span> <span class="seller-value">${phone || 'Not provided'}</span></div>
+    `;
+    modal.style.display = 'flex';
+    // Close modal on outside click
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.style.display = 'none';
+    };
+}
+
+// Attach to dynamically loaded products
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('cart-btn')) {
+        e.preventDefault();
+        // Find product element and its id
+        const productDiv = e.target.closest('.product');
+        const productId = productDiv ? productDiv.getAttribute('data-id') : null;
+        const product = loadedProducts.find(p => p.id == productId);
+        // Show modal with product details
+        showCartModal(product ? product.name : null, product ? product.seller_phone : null);
+    }
+});
 </script>
 </body>
 </html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login - Kilimolink</title>
+    <link rel="stylesheet" href="assets/login.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Login</h2>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminEmail">Admin Email</label>
+                <input type="text" id="adminEmail" name="adminEmail" placeholder="Enter admin email" required />
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter password" required />
+            </div>
+            <div id="adminLoginError" style="color: red; text-align: center; margin-bottom: 10px;"></div>
+            <button type="submit" class="btn">Sign in as Admin</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            fetch('/admin-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.user && data.user.role === 'admin') {
+                    localStorage.setItem('userId', data.user.id);
+                    window.location.href = 'admin.html';
+                } else {
+                    document.getElementById('adminLoginError').textContent = data.message || 'Invalid admin credentials.';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
